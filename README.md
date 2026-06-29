@@ -20,3 +20,28 @@
 ## 搜索引擎
 
 上线后可以把 `sitemap.xml` 提交到 Google Search Console 或百度搜索资源平台。收录通常需要几天到几周。
+
+## 云端保存
+
+GitHub Pages 是静态网站，不能直接把答题记录写回仓库或服务器。页面内置两种云端保存方式：
+
+- Supabase：填写 Project URL、anon public key 和表名。
+- 通用 POST 接口：填写一个能接收 JSON 的 HTTPS API 地址。
+
+Supabase 表可以按下面字段创建：
+
+```sql
+create table exam_attempts (
+  record_id text primary key,
+  learner_id text not null,
+  learner_name text,
+  score int,
+  correct int,
+  total int,
+  time_spent int,
+  paper_seed text,
+  question_ids jsonb,
+  details jsonb,
+  created_at timestamptz
+);
+```
