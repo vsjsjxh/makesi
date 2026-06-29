@@ -13,10 +13,11 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --primary:#b42318;--primary-light:#fff1f0;--primary-dark:#7a1b12;
+  --accent:#2563eb;--accent-light:#eff6ff;--ink:#172033;
   --success:#52c41a;--success-light:#f6ffed;
   --error:#ff4d4f;--error-light:#fff2f0;
   --warning:#faad14;--warning-light:#fffbe6;
-  --bg:#f0f2f5;--card:#fff;--border:#e8e8e8;
+  --bg:#f5f7fb;--card:#fff;--border:#e3e8f0;
   --text:#333;--text-secondary:#666;--text-light:#999;
   --radius:8px;--shadow:0 2px 8px rgba(0,0,0,0.09);
   --font:-apple-system,BlinkMacSystemFont,"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Helvetica Neue",Arial,sans-serif;
@@ -26,23 +27,23 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 a{color:var(--primary);text-decoration:none}
 
 /* Header */
-.app-header{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:16px 20px;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(180,35,24,0.25)}
-.app-header h1{font-size:1.3rem;font-weight:600;letter-spacing:1px}
+.app-header{background:linear-gradient(135deg,#8f1d16,var(--primary-dark));color:#fff;padding:14px 20px;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 14px rgba(93,23,18,0.25)}
+.app-header h1{font-size:1.25rem;font-weight:700;letter-spacing:1px}
 
 /* Tabs */
-.tab-bar{display:flex;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:56px;z-index:99;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.tab-bar{display:flex;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:52px;z-index:99;box-shadow:0 1px 4px rgba(15,23,42,0.06)}
 .tab-btn{flex:1;padding:12px 8px;text-align:center;cursor:pointer;border:none;background:none;font-size:.95rem;color:var(--text-secondary);transition:all .25s;position:relative;font-family:var(--font)}
 .tab-btn:hover{color:var(--primary);background:var(--primary-light)}
 .tab-btn.active{color:var(--primary);font-weight:600}
 .tab-btn.active::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:3px;background:var(--primary);border-radius:3px 3px 0 0}
 
 /* Views */
-.view{display:none;padding:16px;max-width:900px;margin:0 auto;animation:fadeIn .3s}
+.view{display:none;padding:16px;max-width:1120px;margin:0 auto;animation:fadeIn .3s}
 .view.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* Cards */
-.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:12px;transition:box-shadow .2s}
+.card{background:var(--card);border:1px solid rgba(226,232,240,.9);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:12px;transition:box-shadow .2s}
 .card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.12)}
 
 /* Stats */
@@ -135,6 +136,39 @@ a{color:var(--primary);text-decoration:none}
 .exam-start h2{font-size:1.5rem;margin-bottom:20px;color:var(--text)}
 .exam-rules{background:var(--primary-light);border-radius:var(--radius);padding:20px;margin:20px 0;text-align:left;max-width:400px;margin-left:auto;margin-right:auto}
 .exam-rules li{margin-bottom:8px;line-height:1.6}
+.exam-dashboard{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,.7fr);gap:16px;align-items:start;text-align:left}
+.exam-hero{background:linear-gradient(135deg,#8f1d16,#1f2937);color:#fff;border-radius:8px;padding:24px;min-height:220px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 16px 40px rgba(31,41,55,.18)}
+.exam-hero h2{color:#fff;margin:0 0 8px;font-size:1.65rem}
+.exam-hero p{color:rgba(255,255,255,.82);line-height:1.7;margin:0}
+.exam-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:20px}
+.exam-metric{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:12px}
+.exam-metric strong{display:block;font-size:1.45rem;color:#fff;margin-bottom:2px}
+.exam-metric span{font-size:.82rem;color:rgba(255,255,255,.72)}
+.exam-panel{background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px;box-shadow:var(--shadow);margin-bottom:12px}
+.exam-panel h3{font-size:1rem;margin-bottom:10px;color:var(--ink)}
+.exam-checklist{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.exam-check{display:flex;gap:8px;align-items:flex-start;color:var(--text-secondary);line-height:1.55;font-size:.9rem}
+.exam-check b{color:var(--ink)}
+.profile-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
+.profile-row input,.cloud-field input,.cloud-field select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;font-family:var(--font);outline:none}
+.profile-row input:focus,.cloud-field input:focus,.cloud-field select:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(37,99,235,.12)}
+.cloud-status{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:8px;background:var(--accent-light);color:#1d4ed8;font-size:.88rem;margin-top:10px}
+.cloud-status.off{background:#f8fafc;color:#64748b}
+.cloud-status.warn{background:var(--warning-light);color:#ad6800}
+.cloud-status.ok{background:var(--success-light);color:#237804}
+.cloud-form{display:none;gap:10px;margin-top:10px}
+.cloud-form.show{display:grid}
+.cloud-field{display:flex;flex-direction:column;gap:5px}
+.cloud-field label{font-size:.78rem;color:var(--text-light)}
+.exam-layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:16px;align-items:start}
+.exam-side{position:sticky;top:116px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:14px;box-shadow:var(--shadow)}
+.exam-side-title{font-weight:700;color:var(--ink);margin-bottom:10px}
+.exam-phase{display:flex;align-items:center;justify-content:space-between;border-radius:8px;padding:9px 10px;margin-bottom:8px;background:#f8fafc;color:var(--text-secondary);font-size:.86rem}
+.exam-phase.active{background:var(--primary-light);color:var(--primary);font-weight:600}
+.question-palette{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:12px}
+.palette-dot{height:30px;border-radius:6px;border:1px solid var(--border);background:#fff;color:var(--text-secondary);font-size:.78rem;font-weight:600}
+.palette-dot.done{background:var(--success-light);border-color:#b7eb8f;color:#237804}
+.palette-dot.current{background:var(--primary);border-color:var(--primary);color:#fff}
 .exam-progress{background:#fff;border-radius:20px;height:8px;margin-bottom:16px;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,0.1)}
 .exam-progress-bar{height:100%;background:linear-gradient(90deg,var(--primary),#40a9ff);border-radius:20px;transition:width .4s ease}
 .exam-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
@@ -185,6 +219,11 @@ a{color:var(--primary);text-decoration:none}
 .history-score.pass{color:var(--success)}
 .history-score.fail{color:var(--error)}
 .history-meta{font-size:.85rem;color:var(--text-light)}
+.history-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.history-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+.record-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:999px;background:#f8fafc;color:#64748b;font-size:.78rem}
+.record-pill.ok{background:var(--success-light);color:#237804}
+.record-pill.warn{background:var(--warning-light);color:#ad6800}
 
 /* Empty */
 .empty{text-align:center;padding:40px 20px;color:var(--text-light)}
@@ -207,6 +246,12 @@ a{color:var(--primary);text-decoration:none}
   .filters{flex-direction:column}
   .filters select,.filters input{width:100%}
   .result-score{font-size:2.8rem}
+}
+@media(max-width:860px){
+  .exam-dashboard,.exam-layout{grid-template-columns:1fr}
+  .exam-side{position:static}
+  .exam-metrics{grid-template-columns:1fr}
+  .profile-row{grid-template-columns:1fr}
 }
 
 /* Scrollbar */
@@ -331,14 +376,28 @@ let examTimerInterval = null;
 let examStartTime = 0;
 let examSubmitted = false;
 let examRevealed = {};
+let examMeta = {};
+let learnerProfile = null;
+let cloudConfig = null;
+let cloudQueue = [];
+let syncInProgress = false;
 
 // ===== INIT =====
 const DATA_VERSION = 20260627;
+const EXAM_RULES = {
+  single: 17,
+  multi: 5,
+  total: 22,
+  version: 'standard-17-5-20260629'
+};
 const STORAGE = {
   version: 'marx_version',
   questions: 'marx_questions',
   history: 'marx_history',
-  wrongBook: 'marx_wrong_book'
+  wrongBook: 'marx_wrong_book',
+  learner: 'marx_learner_profile',
+  cloudConfig: 'marx_cloud_config',
+  cloudQueue: 'marx_cloud_queue'
 };
 
 function init(){
@@ -355,6 +414,9 @@ function init(){
   if(hist) examHistory = JSON.parse(hist);
   const wrong = localStorage.getItem(STORAGE.wrongBook);
   if(wrong) wrongBook = JSON.parse(wrong);
+  learnerProfile = loadLearnerProfile();
+  cloudConfig = loadCloudConfig();
+  cloudQueue = safeJsonParse(localStorage.getItem(STORAGE.cloudQueue), []);
 
   populateChapterSelects();
 
@@ -403,6 +465,43 @@ function saveHistory(){
 }
 function saveWrongBook(){
   localStorage.setItem(STORAGE.wrongBook, JSON.stringify(wrongBook));
+}
+function safeJsonParse(raw, fallback){
+  if(!raw) return fallback;
+  try{return JSON.parse(raw);}
+  catch(e){return fallback;}
+}
+function saveLearnerProfile(){
+  localStorage.setItem(STORAGE.learner, JSON.stringify(learnerProfile));
+}
+function loadLearnerProfile(){
+  const saved = safeJsonParse(localStorage.getItem(STORAGE.learner), null);
+  if(saved && saved.id) return saved;
+  const id = (crypto.randomUUID ? crypto.randomUUID() : 'learner-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+  const profile = {
+    id,
+    name:'考生-' + id.replace(/-/g,'').slice(0,6).toUpperCase(),
+    createdAt:new Date().toISOString()
+  };
+  localStorage.setItem(STORAGE.learner, JSON.stringify(profile));
+  return profile;
+}
+function loadCloudConfig(){
+  return {
+    provider:'off',
+    endpoint:'',
+    supabaseUrl:'',
+    supabaseKey:'',
+    table:'exam_attempts',
+    lastSyncedAt:'',
+    ...safeJsonParse(localStorage.getItem(STORAGE.cloudConfig), {})
+  };
+}
+function saveCloudConfig(){
+  localStorage.setItem(STORAGE.cloudConfig, JSON.stringify(cloudConfig));
+}
+function saveCloudQueue(){
+  localStorage.setItem(STORAGE.cloudQueue, JSON.stringify(cloudQueue));
 }
 
 // ===== TOAST =====
@@ -483,6 +582,9 @@ function escHtml(s){
   const d = document.createElement('div');
   d.textContent = s == null ? '' : String(s);
   return d.innerHTML;
+}
+function escAttr(s){
+  return escHtml(s).replace(/"/g, '&quot;');
 }
 
 function deleteQuestion(id){
@@ -676,53 +778,292 @@ function saveQuestion(){
   closeModal();
 }
 
+// ===== PROFILE & CLOUD SYNC =====
+function saveLearnerName(){
+  const input = document.getElementById('learner-name');
+  if(!input) return;
+  const name = input.value.trim() || learnerProfile.name;
+  learnerProfile.name = name.slice(0, 30);
+  saveLearnerProfile();
+  renderExamStart();
+  renderHistory();
+  showToast('考生身份已保存');
+}
+
+function getCloudState(){
+  if(!cloudConfig || cloudConfig.provider === 'off'){
+    return {className:'off', text:'本机保存：未配置云端接口'};
+  }
+  const pending = cloudQueue.filter(item=>item.status !== 'synced').length;
+  if(pending > 0) return {className:'warn', text:`云端待同步：${pending} 条记录`};
+  if(cloudConfig.lastSyncedAt) return {className:'ok', text:`云端已同步：${formatDate(cloudConfig.lastSyncedAt)}`};
+  return {className:'warn', text:'云端已配置，尚未同步记录'};
+}
+
+function toggleCloudForm(){
+  const form = document.getElementById('cloud-form');
+  if(!form) return;
+  form.classList.toggle('show');
+  renderCloudProviderFields();
+}
+
+function renderCloudProviderFields(){
+  const providerEl = document.getElementById('cloud-provider');
+  const fields = document.getElementById('cloud-provider-fields');
+  if(!providerEl || !fields) return;
+  const provider = providerEl.value;
+  if(provider === 'supabase'){
+    fields.innerHTML = `
+      <div class="cloud-field">
+        <label>Supabase Project URL</label>
+        <input id="cloud-supabase-url" value="${escAttr(cloudConfig.supabaseUrl || '')}" placeholder="https://xxxx.supabase.co">
+      </div>
+      <div class="cloud-field">
+        <label>Supabase anon public key</label>
+        <input id="cloud-supabase-key" value="${escAttr(cloudConfig.supabaseKey || '')}" placeholder="eyJhbGciOi...">
+      </div>
+      <div class="cloud-field">
+        <label>表名</label>
+        <input id="cloud-table" value="${escAttr(cloudConfig.table || 'exam_attempts')}">
+      </div>
+    `;
+  } else if(provider === 'endpoint'){
+    fields.innerHTML = `
+      <div class="cloud-field">
+        <label>POST 保存接口</label>
+        <input id="cloud-endpoint" value="${escAttr(cloudConfig.endpoint || '')}" placeholder="https://example.com/api/exam-records">
+      </div>
+    `;
+  } else {
+    fields.innerHTML = '<p style="font-size:.85rem;color:var(--text-light);line-height:1.6">关闭后记录只保存在当前浏览器。换设备或清缓存后不会自动恢复。</p>';
+  }
+}
+
+function saveCloudSettings(){
+  const provider = document.getElementById('cloud-provider')?.value || 'off';
+  cloudConfig.provider = provider;
+  if(provider === 'supabase'){
+    cloudConfig.supabaseUrl = (document.getElementById('cloud-supabase-url')?.value || '').trim().replace(/\/+$/,'');
+    cloudConfig.supabaseKey = (document.getElementById('cloud-supabase-key')?.value || '').trim();
+    cloudConfig.table = (document.getElementById('cloud-table')?.value || 'exam_attempts').trim() || 'exam_attempts';
+    if(!cloudConfig.supabaseUrl || !cloudConfig.supabaseKey){
+      showToast('请填写 Supabase URL 和 anon key','error');
+      return;
+    }
+  } else if(provider === 'endpoint'){
+    cloudConfig.endpoint = (document.getElementById('cloud-endpoint')?.value || '').trim();
+    if(!cloudConfig.endpoint){
+      showToast('请填写 POST 保存接口','error');
+      return;
+    }
+  }
+  saveCloudConfig();
+  renderExamStart();
+  showToast(provider === 'off' ? '已关闭云端保存' : '云端设置已保存');
+}
+
+function buildCloudPayload(record){
+  return {
+    record_id:String(record.id),
+    learner_id:record.learnerId,
+    learner_name:record.learnerName,
+    score:record.score,
+    correct:record.correct,
+    total:record.total,
+    time_spent:record.timeSpent,
+    paper_seed:record.paperSeed,
+    question_ids:record.questionIds,
+    created_at:record.createdAt,
+    details:record.results.map(q => ({
+      id:q.id,
+      type:q.type,
+      chapter:q.chapter,
+      userAnswer:formatUserAnswer(q, q.userAnswer),
+      correctAnswer:q.answer,
+      isCorrect:q.isCorrect
+    }))
+  };
+}
+
+function queueCloudRecord(record){
+  if(!cloudConfig || cloudConfig.provider === 'off'){
+    record.cloudStatus = 'local';
+    return;
+  }
+  const payload = buildCloudPayload(record);
+  const existing = cloudQueue.find(item => item.record_id === payload.record_id);
+  if(!existing) cloudQueue.unshift({...payload, status:'pending', queued_at:new Date().toISOString()});
+  saveCloudQueue();
+}
+
+async function syncCloudQueue(){
+  if(syncInProgress) return;
+  if(!cloudConfig || cloudConfig.provider === 'off'){
+    showToast('请先配置云端保存','error');
+    return;
+  }
+  const pending = cloudQueue.filter(item=>item.status !== 'synced');
+  if(pending.length === 0){
+    showToast('没有待同步记录');
+    return;
+  }
+  syncInProgress = true;
+  let ok = 0;
+  try{
+    for(const item of pending){
+      await uploadCloudRecord(item);
+      item.status = 'synced';
+      item.synced_at = new Date().toISOString();
+      const record = examHistory.find(h => String(h.id) === String(item.record_id));
+      if(record) record.cloudStatus = 'synced';
+      ok++;
+    }
+    cloudConfig.lastSyncedAt = new Date().toISOString();
+    saveCloudConfig();
+    saveCloudQueue();
+    saveHistory();
+    showToast(`云端同步完成：${ok} 条`);
+  }catch(err){
+    saveCloudQueue();
+    showToast('云端同步失败：' + (err.message || err), 'error');
+  }finally{
+    syncInProgress = false;
+    renderHistory();
+    if(document.getElementById('view-exam').classList.contains('active') && !examQuestions.length) renderExamStart();
+  }
+}
+
+async function uploadCloudRecord(item){
+  if(cloudConfig.provider === 'supabase'){
+    const table = encodeURIComponent(cloudConfig.table || 'exam_attempts');
+    const url = `${cloudConfig.supabaseUrl}/rest/v1/${table}`;
+    const response = await fetch(url, {
+      method:'POST',
+      headers:{
+        apikey:cloudConfig.supabaseKey,
+        Authorization:`Bearer ${cloudConfig.supabaseKey}`,
+        'Content-Type':'application/json',
+        Prefer:'resolution=merge-duplicates'
+      },
+      body:JSON.stringify(item)
+    });
+    if(!response.ok) throw new Error(`Supabase ${response.status}`);
+    return;
+  }
+  const response = await fetch(cloudConfig.endpoint, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(item)
+  });
+  if(!response.ok) throw new Error(`接口 ${response.status}`);
+}
+
 // ===== EXAM =====
 function renderExamStart(){
   const el = document.getElementById('view-exam');
   const singleCount = questions.filter(q=>q.type==='单选题').length;
   const multiCount = questions.filter(q=>q.type==='多选题').length;
 
-  const canStart = singleCount >= 15 && multiCount >= 5;
+  const canStart = singleCount >= EXAM_RULES.single && multiCount >= EXAM_RULES.multi;
+  const cloudState = getCloudState();
 
   el.innerHTML = `
     <div class="exam-start">
-      <h2>模拟考试</h2>
-      <div class="exam-rules">
-        <p style="font-weight:600;margin-bottom:10px">考试规则</p>
-        <ul style="padding-left:20px">
-          <li>单选题：<strong>15道</strong>（题库现有 ${singleCount} 道）</li>
-          <li>多选题：<strong>5道</strong>（题库现有 ${multiCount} 道）</li>
-          <li>共 <strong>20道</strong>，随机从题库抽取</li>
-          <li>每题分值相等，满分 <strong>100分</strong></li>
-          <li>每题作答后立即显示正确答案，点击“下一题”继续</li>
-          <li>答错自动进入错题本，连续答对两次可标记为已掌握</li>
-          <li>计时器仅供参考，不限制答题时间</li>
-        </ul>
+      <div class="exam-dashboard">
+        <section class="exam-hero">
+          <div>
+            <h2>标准模拟答题</h2>
+            <p>按正式练习节奏组卷：先完成 ${EXAM_RULES.single} 道单选，再完成 ${EXAM_RULES.multi} 道多选。每位考生会基于独立身份生成不同试卷顺序和抽题组合。</p>
+          </div>
+          <div class="exam-metrics">
+            <div class="exam-metric"><strong>${EXAM_RULES.single}</strong><span>单选题</span></div>
+            <div class="exam-metric"><strong>${EXAM_RULES.multi}</strong><span>多选题</span></div>
+            <div class="exam-metric"><strong>${EXAM_RULES.total}</strong><span>总题量</span></div>
+          </div>
+        </section>
+
+        <aside>
+          <div class="exam-panel">
+            <h3>考生身份</h3>
+            <p style="font-size:.88rem;color:var(--text-secondary);line-height:1.6">记录会按本机生成的考生 ID 区分，避免不同人的成绩混在一起。</p>
+            <div class="profile-row">
+              <input id="learner-name" value="${escAttr(learnerProfile.name)}" placeholder="填写昵称或姓名">
+              <button class="btn btn-outline btn-sm" onclick="saveLearnerName()">保存</button>
+            </div>
+            <div class="wrong-meta">ID：${escHtml(learnerProfile.id.slice(0,8))} · 已保存 ${examHistory.filter(h=>h.learnerId===learnerProfile.id).length} 次记录</div>
+          </div>
+
+          <div class="exam-panel">
+            <h3>云端保存</h3>
+            <div class="cloud-status ${cloudState.className}">
+              <span>${cloudState.text}</span>
+              <button class="btn btn-muted btn-sm" onclick="toggleCloudForm()">配置</button>
+            </div>
+            <div id="cloud-form" class="cloud-form">
+              <div class="cloud-field">
+                <label>保存方式</label>
+                <select id="cloud-provider" onchange="renderCloudProviderFields()">
+                  <option value="off" ${cloudConfig.provider==='off'?'selected':''}>关闭，仅本机保存</option>
+                  <option value="supabase" ${cloudConfig.provider==='supabase'?'selected':''}>Supabase 数据库</option>
+                  <option value="endpoint" ${cloudConfig.provider==='endpoint'?'selected':''}>通用 POST 接口</option>
+                </select>
+              </div>
+              <div id="cloud-provider-fields"></div>
+              <button class="btn btn-primary btn-sm" onclick="saveCloudSettings()">保存云端设置</button>
+              <button class="btn btn-outline btn-sm" onclick="syncCloudQueue()">立即同步记录</button>
+            </div>
+          </div>
+
+          <div class="exam-panel">
+            <h3>考试规则</h3>
+            <div class="exam-checklist">
+              <div class="exam-check"><span>1</span><div><b>题序固定：</b>先单选，后多选，不再混排。</div></div>
+              <div class="exam-check"><span>2</span><div><b>个性化：</b>用考生 ID、日期和作答次数生成试卷种子。</div></div>
+              <div class="exam-check"><span>3</span><div><b>复盘：</b>错题自动进入错题本，答题记录可本机保存或同步到云端。</div></div>
+            </div>
+          </div>
+        </aside>
       </div>
-      <button class="btn btn-primary btn-lg" onclick="startExam()" ${canStart?'':'disabled'} style="margin-top:16px">
-        ${canStart ? '开始答题' : '题库题目不足，无法开始'}
-      </button>
-      ${!canStart ? '<p style="color:var(--error);margin-top:10px;font-size:.85rem">需要至少：单选题15道、多选题5道</p>' : ''}
+
+      <div style="margin-top:16px">
+        <button class="btn btn-primary btn-lg" onclick="startExam()" ${canStart?'':'disabled'}>
+          ${canStart ? '开始标准模拟' : '题库题目不足，无法开始'}
+        </button>
+        ${!canStart ? `<p style="color:var(--error);margin-top:10px;font-size:.85rem">需要至少：单选题${EXAM_RULES.single}道、多选题${EXAM_RULES.multi}道</p>` : ''}
+      </div>
     </div>
   `;
+  renderCloudProviderFields();
 }
 
 function startExam(){
-  const singles = shuffle(questions.filter(q=>q.type==='单选题')).slice(0,15);
-  const multis = shuffle(questions.filter(q=>q.type==='多选题')).slice(0,5);
-  if(singles.length < 15 || multis.length < 5){
+  const attemptNo = examHistory.filter(h=>h.learnerId===learnerProfile.id).length + 1;
+  const seed = [learnerProfile.id, new Date().toISOString().slice(0,10), attemptNo, EXAM_RULES.version].join('|');
+  const rand = seededRandom(seed);
+  const singles = shuffleWithRandom(questions.filter(q=>q.type==='单选题'), rand).slice(0,EXAM_RULES.single);
+  const multis = shuffleWithRandom(questions.filter(q=>q.type==='多选题'), rand).slice(0,EXAM_RULES.multi);
+  if(singles.length < EXAM_RULES.single || multis.length < EXAM_RULES.multi){
     showToast('题库题量不足，无法开始','error');
     return;
   }
-  beginExamWithQuestions(shuffle([...singles, ...multis]));
+  beginExamWithQuestions([...singles, ...multis], {
+    mode:'standard',
+    ruleVersion:EXAM_RULES.version,
+    paperSeed:seed,
+    attemptNo,
+    learnerId:learnerProfile.id,
+    learnerName:learnerProfile.name,
+    questionIds:[...singles, ...multis].map(q=>q.id)
+  });
 }
 
-function beginExamWithQuestions(list){
+function beginExamWithQuestions(list, meta={}){
   examQuestions = list.map(q => ({...q, options: q.options ? {...q.options} : null}));
   examAnswers = {};
   examCurrentIdx = 0;
   examSubmitted = false;
   examRevealed = {};
+  examMeta = meta;
   examStartTime = Date.now();
 
   if(examTimerInterval) clearInterval(examTimerInterval);
@@ -733,12 +1074,31 @@ function beginExamWithQuestions(list){
 }
 
 function shuffle(arr){
+  return shuffleWithRandom(arr, Math.random);
+}
+
+function shuffleWithRandom(arr, randomFn){
   const a = [...arr];
   for(let i=a.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
+    const j=Math.floor(randomFn()*(i+1));
     [a[i],a[j]]=[a[j],a[i]];
   }
   return a;
+}
+
+function seededRandom(seedText){
+  let h = 2166136261;
+  for(let i=0;i<seedText.length;i++){
+    h ^= seedText.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return function(){
+    h += 0x6D2B79F5;
+    let t = h;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }
 
 function updateTimer(){
@@ -832,21 +1192,45 @@ function renderExamQuestion(){
     actionHtml = '<div class="answer-tip">选择一个答案后，将立即显示正确答案</div>';
   }
 
+  const standardMode = examMeta.mode === 'standard';
+  const currentPhase = standardMode && examCurrentIdx >= EXAM_RULES.single ? '多选阶段' : (standardMode ? '单选阶段' : '练习模式');
+  const singleDone = standardMode ? Math.min(examCurrentIdx + (revealed ? 1 : 0), EXAM_RULES.single) : examQuestions.filter(x=>x.type==='单选题' && examRevealed[x.id]).length;
+  const multiDone = standardMode ? Math.max(0, Math.min(examCurrentIdx + (revealed ? 1 : 0) - EXAM_RULES.single, EXAM_RULES.multi)) : examQuestions.filter(x=>x.type==='多选题' && examRevealed[x.id]).length;
+  const paletteHtml = examQuestions.map((item, index) => {
+    const cls = index === examCurrentIdx ? 'current' : (examRevealed[item.id] ? 'done' : '');
+    return `<button class="palette-dot ${cls}" type="button" title="第${index+1}题">${index+1}</button>`;
+  }).join('');
+
   document.getElementById('view-exam').innerHTML = `
-    <div class="exam-top">
-      <span class="exam-qnum">第 ${examCurrentIdx+1} / ${total} 题</span>
-      <span class="exam-timer" id="exam-timer">⏱ 00:00</span>
-    </div>
-    <div class="exam-progress"><div class="exam-progress-bar" style="width:${progress}%"></div></div>
-    <div class="exam-card">
-      <span class="exam-q-type" style="${typeBg}">${typeLabel}</span>
-      <div class="exam-q-text">${escHtml(q.question)}</div>
-      ${q.image ? `<img class="exam-q-image" src="${q.image}" alt="题目图片">` : ''}
-      ${optionsHtml}
-      ${feedbackHtml}
-    </div>
-    <div class="exam-nav">
-      ${actionHtml}
+    <div class="exam-layout">
+      <main>
+        <div class="exam-top">
+          <span class="exam-qnum">${currentPhase} · 第 ${examCurrentIdx+1} / ${total} 题</span>
+          <span class="exam-timer" id="exam-timer">⏱ 00:00</span>
+        </div>
+        <div class="exam-progress"><div class="exam-progress-bar" style="width:${progress}%"></div></div>
+        <div class="exam-card">
+          <span class="exam-q-type" style="${typeBg}">${typeLabel}</span>
+          <div class="exam-q-text">${escHtml(q.question)}</div>
+          ${q.image ? `<img class="exam-q-image" src="${q.image}" alt="题目图片">` : ''}
+          ${optionsHtml}
+          ${feedbackHtml}
+        </div>
+        <div class="exam-nav">
+          ${actionHtml}
+        </div>
+      </main>
+      <aside class="exam-side">
+        <div class="exam-side-title">答题进度</div>
+        <div class="exam-phase ${standardMode && examCurrentIdx < EXAM_RULES.single ? 'active' : ''}">
+          <span>单选题</span><strong>${singleDone}/${standardMode ? EXAM_RULES.single : examQuestions.filter(x=>x.type==='单选题').length}</strong>
+        </div>
+        <div class="exam-phase ${standardMode && examCurrentIdx >= EXAM_RULES.single ? 'active' : ''}">
+          <span>多选题</span><strong>${multiDone}/${standardMode ? EXAM_RULES.multi : examQuestions.filter(x=>x.type==='多选题').length}</strong>
+        </div>
+        <div class="question-palette">${paletteHtml}</div>
+        <div class="wrong-meta" style="margin-top:12px">试卷：${escHtml((examMeta.paperSeed || 'practice').split('|')[0].slice(0,8))}</div>
+      </aside>
     </div>
   `;
   updateTimer();
@@ -936,11 +1320,21 @@ function submitExam(){
   });
 
   const score = Math.round((correct/examQuestions.length)*100);
+  const createdAt = new Date().toISOString();
 
   // Save history
   const record = {
     id: Date.now(),
     date: new Date().toLocaleString('zh-CN'),
+    createdAt,
+    learnerId:examMeta.learnerId || learnerProfile.id,
+    learnerName:examMeta.learnerName || learnerProfile.name,
+    mode:examMeta.mode || 'practice',
+    ruleVersion:examMeta.ruleVersion || 'practice',
+    paperSeed:examMeta.paperSeed || '',
+    attemptNo:examMeta.attemptNo || null,
+    questionIds:examQuestions.map(q=>q.id),
+    cloudStatus:cloudConfig.provider === 'off' ? 'local' : 'pending',
     score,
     correct,
     total: examQuestions.length,
@@ -948,10 +1342,15 @@ function submitExam(){
     results
   };
   examHistory.unshift(record);
+  queueCloudRecord(record);
   saveHistory();
   saveWrongBook();
   renderBank();
   renderWrongBook();
+  renderHistory();
+  if(cloudConfig.provider !== 'off'){
+    syncCloudQueue();
+  }
 
   renderExamResult(record);
 }
@@ -1028,10 +1427,13 @@ function renderExamResult(record){
         <span>✅ 正确：${record.correct}</span>
         <span>❌ 错误：${record.total - record.correct}</span>
         <span>⏱ 用时：${m}:${s}</span>
+        <span>👤 ${escHtml(record.learnerName || learnerProfile.name)}</span>
       </div>
+      <div class="wrong-meta">试卷规则：${record.mode === 'standard' ? `${EXAM_RULES.single} 单选 + ${EXAM_RULES.multi} 多选` : '错题练习'} · ${getRecordCloudText(record)}</div>
       <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
         <button class="btn btn-primary" onclick="renderExamStart()">🔄 再考一次</button>
         <button class="btn btn-outline" onclick="switchTab('wrongbook')">查看错题本</button>
+        <button class="btn btn-outline" onclick="switchTab('history')">答题记录</button>
         <button class="btn btn-outline" onclick="switchTab('bank')">📚 返回题库</button>
       </div>
     </div>
@@ -1199,7 +1601,14 @@ function startWrongPractice(id){
     showToast('没有可练习的未掌握错题','error');
     return;
   }
-  beginExamWithQuestions(shuffle(entries));
+  beginExamWithQuestions(shuffle(entries), {
+    mode:'wrongbook',
+    ruleVersion:'wrongbook-practice',
+    paperSeed:'wrongbook|' + learnerProfile.id + '|' + Date.now(),
+    learnerId:learnerProfile.id,
+    learnerName:learnerProfile.name,
+    questionIds:entries.map(q=>q.id)
+  });
 }
 
 function toggleMastered(id){
@@ -1302,26 +1711,85 @@ function switchTab(tab){
 // ===== HISTORY =====
 function renderHistory(){
   const el = document.getElementById('history-list');
-  if(examHistory.length === 0){
-    el.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><p>暂无答题记录</p></div>';
+  const scopedHistory = examHistory.filter(h => !h.learnerId || h.learnerId === learnerProfile.id);
+  const pending = cloudQueue.filter(item=>item.status !== 'synced').length;
+  const average = scopedHistory.length ? Math.round(scopedHistory.reduce((sum,h)=>sum+(h.score||0),0)/scopedHistory.length) : 0;
+  const best = scopedHistory.length ? Math.max(...scopedHistory.map(h=>h.score||0)) : 0;
+  if(scopedHistory.length === 0){
+    el.innerHTML = `
+      <div class="history-toolbar">
+        <div>
+          <h2 style="font-size:1.15rem;margin-bottom:4px">答题记录</h2>
+          <div class="history-meta">当前考生：${escHtml(learnerProfile.name)} · ${escHtml(learnerProfile.id.slice(0,8))}</div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="syncCloudQueue()">同步云端</button>
+      </div>
+      <div class="empty"><div class="empty-icon">📊</div><p>暂无答题记录</p></div>
+    `;
     return;
   }
 
-  el.innerHTML = examHistory.map(h => {
+  el.innerHTML = `
+    <div class="history-toolbar">
+      <div>
+        <h2 style="font-size:1.15rem;margin-bottom:4px">答题记录</h2>
+        <div class="history-meta">当前考生：${escHtml(learnerProfile.name)} · ${escHtml(learnerProfile.id.slice(0,8))}</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-outline btn-sm" onclick="syncCloudQueue()">同步云端</button>
+        <button class="btn btn-muted btn-sm" onclick="exportHistory()">导出记录</button>
+      </div>
+    </div>
+    <div class="history-summary">
+      <div class="stat-card"><div class="num">${scopedHistory.length}</div><div class="label">累计作答</div></div>
+      <div class="stat-card single"><div class="num">${average}</div><div class="label">平均分</div></div>
+      <div class="stat-card multi"><div class="num">${best}</div><div class="label">最高分</div></div>
+      <div class="stat-card wrong"><div class="num">${pending}</div><div class="label">待同步</div></div>
+    </div>
+  ` + scopedHistory.map(h => {
     const pass = h.score >= 60;
     const m = String(Math.floor(h.timeSpent/60)).padStart(2,'0');
     const s = String(h.timeSpent%60).padStart(2,'0');
+    const modeText = h.mode === 'standard' ? '标准模拟' : '错题练习';
+    const cloudText = getRecordCloudText(h);
+    const cloudClass = h.cloudStatus === 'synced' ? 'ok' : (h.cloudStatus === 'pending' ? 'warn' : '');
     return `<div class="card history-item" onclick="viewHistoryDetail(${h.id})">
       <div>
         <div class="history-score ${pass?'pass':'fail'}">${h.score}分</div>
-        <div class="history-meta">${h.date}</div>
+        <div class="history-meta">${h.date} · ${escHtml(modeText)}</div>
       </div>
       <div class="history-info">
         <span style="color:var(--success)">✅ ${h.correct}/${h.total}</span>
         <span style="color:var(--text-light)">⏱ ${m}:${s}</span>
+        <span class="record-pill ${cloudClass}">${escHtml(cloudText)}</span>
       </div>
     </div>`;
   }).join('');
+}
+
+function getRecordCloudText(record){
+  if(record.cloudStatus === 'synced') return '云端已保存';
+  if(record.cloudStatus === 'pending') return '等待云同步';
+  if(cloudQueue.some(item=>item.record_id === String(record.id) && item.status !== 'synced')) return '等待云同步';
+  return '本机保存';
+}
+
+function exportHistory(){
+  const payload = {
+    subject:'马克思主义基本原理',
+    learner:learnerProfile,
+    exportedAt:new Date().toISOString(),
+    records:examHistory.filter(h => !h.learnerId || h.learnerId === learnerProfile.id)
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '马克思主义基本原理答题记录.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }
 
 function viewHistoryDetail(id){
@@ -1398,8 +1866,9 @@ function viewHistoryDetail(id){
         <span>✅ 正确：${h.correct}</span>
         <span>❌ 错误：${h.total - h.correct}</span>
         <span>⏱ 用时：${m}:${s}</span>
+        <span>👤 ${escHtml(h.learnerName || learnerProfile.name)}</span>
       </div>
-      <div style="margin-top:8px;font-size:.85rem;color:var(--text-light)">${h.date}</div>
+      <div style="margin-top:8px;font-size:.85rem;color:var(--text-light)">${h.date} · ${escHtml(getRecordCloudText(h))}</div>
     </div>
     <h3 style="margin:16px 0 10px;font-size:1rem">📝 答题详情</h3>
     ${reviewHtml}
