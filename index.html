@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="马克思主义基本原理题库系统，支持题库浏览、练习、模拟考试、错题本和数据导入导出。">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="马克思主义基本原理题库系统">
+<meta property="og:description" content="在线题库练习与模拟考试工具。">
+<meta property="og:type" content="website">
+<title>马克思主义基本原理题库系统</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#b42318;--primary-light:#fff1f0;--primary-dark:#7a1b12;
+  --success:#52c41a;--success-light:#f6ffed;
+  --error:#ff4d4f;--error-light:#fff2f0;
+  --warning:#faad14;--warning-light:#fffbe6;
+  --bg:#f0f2f5;--card:#fff;--border:#e8e8e8;
+  --text:#333;--text-secondary:#666;--text-light:#999;
+  --radius:8px;--shadow:0 2px 8px rgba(0,0,0,0.09);
+  --font:-apple-system,BlinkMacSystemFont,"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Helvetica Neue",Arial,sans-serif;
+}
+html{font-size:14px}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+a{color:var(--primary);text-decoration:none}
+
+/* Header */
+.app-header{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:16px 20px;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(180,35,24,0.25)}
+.app-header h1{font-size:1.3rem;font-weight:600;letter-spacing:1px}
+
+/* Tabs */
+.tab-bar{display:flex;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:56px;z-index:99;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.tab-btn{flex:1;padding:12px 8px;text-align:center;cursor:pointer;border:none;background:none;font-size:.95rem;color:var(--text-secondary);transition:all .25s;position:relative;font-family:var(--font)}
+.tab-btn:hover{color:var(--primary);background:var(--primary-light)}
+.tab-btn.active{color:var(--primary);font-weight:600}
+.tab-btn.active::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:3px;background:var(--primary);border-radius:3px 3px 0 0}
+
+/* Views */
+.view{display:none;padding:16px;max-width:900px;margin:0 auto;animation:fadeIn .3s}
+.view.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Cards */
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:12px;transition:box-shadow .2s}
+.card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.12)}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px}
+.stat-card{background:var(--card);border-radius:var(--radius);padding:14px;text-align:center;box-shadow:var(--shadow)}
+.stat-card .num{font-size:1.8rem;font-weight:700;color:var(--primary)}
+.stat-card .label{font-size:.8rem;color:var(--text-light);margin-top:4px}
+.stat-card.judge .num{color:var(--warning)}
+.stat-card.single .num{color:var(--primary)}
+.stat-card.multi .num{color:var(--success)}
+.stat-card.wrong .num{color:var(--error)}
+
+/* Filters */
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.filters select,.filters input{padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;font-family:var(--font);background:#fff;outline:none;transition:border-color .2s}
+.filters select:focus,.filters input:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(180,35,24,0.12)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:8px 18px;border:none;border-radius:6px;font-size:.9rem;cursor:pointer;transition:all .2s;font-family:var(--font);gap:6px}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 2px 8px rgba(180,35,24,0.28)}
+.btn-success{background:var(--success);color:#fff}
+.btn-success:hover{background:#389e0d}
+.btn-danger{background:var(--error);color:#fff}
+.btn-danger:hover{background:#cf1322}
+.btn-warning{background:var(--warning);color:#fff}
+.btn-warning:hover{background:#d48806}
+.btn-outline{background:#fff;color:var(--primary);border:1px solid var(--primary)}
+.btn-outline:hover{background:var(--primary-light)}
+.btn-muted{background:#fff;color:var(--text-secondary);border:1px solid var(--border)}
+.btn-muted:hover{border-color:#bbb;color:var(--text)}
+.btn-sm{padding:5px 12px;font-size:.8rem}
+.btn-lg{padding:12px 32px;font-size:1.05rem}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+
+/* Question List */
+.q-list{display:flex;flex-direction:column;gap:10px}
+.q-item{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);border-left:4px solid var(--primary);transition:all .2s}
+.q-item:hover{box-shadow:0 4px 16px rgba(0,0,0,0.12)}
+.q-item.judge{border-left-color:var(--warning)}
+.q-item.single{border-left-color:var(--primary)}
+.q-item.multi{border-left-color:var(--success)}
+.q-item.wrong-card{border-left-color:var(--error)}
+.q-item.mastered{border-left-color:var(--success);opacity:.88}
+.q-item-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px}
+.q-tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:500}
+.tag-chapter{background:var(--primary-light);color:var(--primary)}
+.tag-judge{background:var(--warning-light);color:#d48806}
+.tag-single{background:var(--primary-light);color:var(--primary)}
+.tag-multi{background:var(--success-light);color:#389e0d}
+.q-actions{display:flex;gap:6px}
+.q-text{font-size:.95rem;line-height:1.6;margin-bottom:6px}
+.q-options{margin:6px 0 6px 16px;color:var(--text-secondary);font-size:.88rem;line-height:1.7}
+.q-answer{font-size:.85rem;color:var(--success);font-weight:500}
+.q-image{max-width:100%;max-height:200px;border-radius:6px;margin-top:8px;cursor:pointer}
+.wrong-meta{font-size:.84rem;color:var(--text-light);line-height:1.7;margin-top:6px}
+.note-input{width:100%;min-height:64px;margin-top:10px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;resize:vertical;font-size:.86rem;line-height:1.55;outline:none}
+.note-input:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(180,35,24,0.12)}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;justify-content:center;align-items:center;padding:16px;animation:fadeIn .2s}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:12px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.2);animation:slideUp .3s}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-header h3{font-size:1.1rem}
+.modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-light);line-height:1}
+.modal-close:hover{color:var(--error)}
+.modal-body{padding:20px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-weight:500;margin-bottom:6px;color:var(--text)}
+.form-group select,.form-group textarea,.form-group input[type="text"]{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;font-family:var(--font);outline:none;transition:border-color .2s}
+.form-group select:focus,.form-group textarea:focus,.form-group input[type="text"]:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(24,144,255,0.15)}
+.form-group textarea{resize:vertical;min-height:70px}
+.option-inputs{display:flex;flex-direction:column;gap:8px}
+.option-input{display:flex;align-items:center;gap:6px}
+.option-input span{font-weight:600;min-width:20px;color:var(--primary)}
+.option-input input[type="text"]{flex:1}
+.option-input .opt-del-btn{background:var(--error);color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:.75rem;cursor:pointer;line-height:1}
+.option-input .opt-del-btn:hover{background:#d9363e}
+.add-opt-btn{background:var(--primary-light);color:var(--primary);border:1px dashed var(--primary);border-radius:6px;padding:6px 12px;font-size:.85rem;cursor:pointer;width:100%;margin-top:4px}
+.add-opt-btn:hover{background:#e6f7ff}
+.answer-radios,.answer-checkboxes{display:flex;gap:16px;flex-wrap:wrap}
+.answer-radios label,.answer-checkboxes label{display:flex;align-items:center;gap:4px;cursor:pointer;font-weight:400}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+
+/* Exam */
+.exam-start{text-align:center;padding:40px 20px}
+.exam-start h2{font-size:1.5rem;margin-bottom:20px;color:var(--text)}
+.exam-rules{background:var(--primary-light);border-radius:var(--radius);padding:20px;margin:20px 0;text-align:left;max-width:400px;margin-left:auto;margin-right:auto}
+.exam-rules li{margin-bottom:8px;line-height:1.6}
+.exam-progress{background:#fff;border-radius:20px;height:8px;margin-bottom:16px;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,0.1)}
+.exam-progress-bar{height:100%;background:linear-gradient(90deg,var(--primary),#40a9ff);border-radius:20px;transition:width .4s ease}
+.exam-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.exam-timer{font-size:.9rem;color:var(--text-secondary);font-variant-numeric:tabular-nums}
+.exam-qnum{font-size:.9rem;color:var(--primary);font-weight:600}
+.exam-card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+.exam-q-type{display:inline-block;padding:2px 10px;border-radius:4px;font-size:.8rem;margin-bottom:12px}
+.exam-q-text{font-size:1.05rem;line-height:1.7;margin-bottom:16px}
+.exam-q-image{max-width:100%;max-height:250px;border-radius:6px;margin-bottom:16px}
+.exam-options{display:flex;flex-direction:column;gap:10px}
+.exam-option{padding:12px 16px;border:2px solid var(--border);border-radius:8px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px}
+.exam-option:hover{border-color:var(--primary);background:var(--primary-light)}
+.exam-option.selected{border-color:var(--primary);background:var(--primary-light);color:var(--primary);font-weight:500}
+.exam-option.correct{border-color:var(--success);background:var(--success-light);color:#389e0d}
+.exam-option.wrong{border-color:var(--error);background:var(--error-light);color:#cf1322}
+.exam-option .opt-letter{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.85rem;background:#f0f0f0;flex-shrink:0}
+.exam-option.selected .opt-letter{background:var(--primary);color:#fff}
+.exam-option.correct .opt-letter{background:var(--success);color:#fff}
+.exam-option.wrong .opt-letter{background:var(--error);color:#fff}
+.exam-nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px;flex-wrap:wrap}
+.exam-nav .btn{flex:1;min-width:0}
+.multi-hint{font-size:.8rem;color:var(--warning);margin-bottom:8px}
+.answer-tip{width:100%;padding:10px 14px;border-radius:8px;background:var(--primary-light);color:var(--primary);font-size:.85rem;text-align:center}
+.answer-feedback{margin-top:16px;padding:14px 16px;border-radius:8px;border:1px solid}
+.answer-feedback.correct{background:var(--success-light);border-color:var(--success);color:#237804}
+.answer-feedback.wrong{background:var(--error-light);border-color:var(--error);color:#a8071a}
+.answer-feedback-title{font-size:1rem;font-weight:600;margin-bottom:6px}
+.answer-feedback-detail{font-size:.88rem;line-height:1.7}
+
+/* Result */
+.result-header{text-align:center;padding:30px 20px}
+.result-score{font-size:3.5rem;font-weight:700;margin:10px 0}
+.result-score.pass{color:var(--success)}
+.result-score.fail{color:var(--error)}
+.result-detail{display:flex;justify-content:center;gap:24px;margin-top:10px;flex-wrap:wrap}
+.result-detail span{font-size:.9rem;color:var(--text-secondary)}
+.review-item{margin-bottom:12px}
+.review-item .q-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.review-item .q-header .icon{font-size:1.1rem}
+.review-item .q-header .icon.ok{color:var(--success)}
+.review-item .q-header .icon.no{color:var(--error)}
+
+/* History */
+.history-item{display:flex;justify-content:space-between;align-items:center;padding:14px;cursor:pointer;flex-wrap:wrap;gap:8px}
+.history-item:hover{background:var(--primary-light)}
+.history-info{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.history-score{font-size:1.3rem;font-weight:700}
+.history-score.pass{color:var(--success)}
+.history-score.fail{color:var(--error)}
+.history-meta{font-size:.85rem;color:var(--text-light)}
+
+/* Empty */
+.empty{text-align:center;padding:40px 20px;color:var(--text-light)}
+.empty-icon{font-size:3rem;margin-bottom:12px;opacity:.4}
+
+/* Toast */
+.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);padding:10px 24px;border-radius:8px;color:#fff;font-size:.9rem;z-index:300;animation:toastIn .3s;pointer-events:none}
+.toast.success{background:var(--success)}
+.toast.error{background:var(--error)}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* Responsive */
+@media(max-width:600px){
+  .app-header h1{font-size:1.1rem}
+  .view{padding:10px}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .option-inputs{grid-template-columns:1fr}
+  .exam-card{padding:14px}
+  .modal{max-width:100%;margin:8px;border-radius:8px}
+  .filters{flex-direction:column}
+  .filters select,.filters input{width:100%}
+  .result-score{font-size:2.8rem}
+}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#aaa}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <h1>马克思主义基本原理题库系统</h1>
+</header>
+
+<nav class="tab-bar">
+  <button class="tab-btn active" data-tab="bank">题库管理</button>
+  <button class="tab-btn" data-tab="exam">模拟答题</button>
+  <button class="tab-btn" data-tab="wrongbook">错题本</button>
+  <button class="tab-btn" data-tab="history">答题记录</button>
+</nav>
+
+<div id="view-bank" class="view active">
+  <div class="stats-row" id="bank-stats"></div>
+  <div class="filters">
+    <select id="filter-chapter"><option value="">全部章节</option></select>
+    <select id="filter-type"><option value="">全部题型</option><option value="单选题">单选题</option><option value="多选题">多选题</option></select>
+    <input type="text" id="filter-search" placeholder="搜索题目...">
+    <button class="btn btn-primary btn-sm" onclick="openAddModal()">+ 添加题目</button>
+  </div>
+  <div class="q-list" id="bank-list"></div>
+</div>
+
+<div id="view-exam" class="view"></div>
+
+<div id="view-wrongbook" class="view">
+  <div class="stats-row" id="wrong-stats"></div>
+  <div class="filters">
+    <select id="wrong-chapter"><option value="">全部章节</option></select>
+    <select id="wrong-type"><option value="">全部题型</option><option value="单选题">单选题</option><option value="多选题">多选题</option></select>
+    <select id="wrong-status"><option value="unmastered">未掌握</option><option value="all">全部</option><option value="mastered">已掌握</option></select>
+    <select id="wrong-sort"><option value="recent">最近出错</option><option value="count">错误次数</option><option value="chapter">章节顺序</option></select>
+    <input type="text" id="wrong-search" placeholder="搜索错题...">
+    <button class="btn btn-primary btn-sm" onclick="startWrongPractice()">错题练习</button>
+    <button class="btn btn-outline btn-sm" onclick="exportWrongBook()">导出</button>
+    <button class="btn btn-muted btn-sm" onclick="document.getElementById('wrong-import').click()">导入</button>
+    <button class="btn btn-muted btn-sm" onclick="clearMasteredWrong()">清空已掌握</button>
+    <input id="wrong-import" type="file" accept="application/json,.json" style="display:none">
+  </div>
+  <div class="q-list" id="wrong-list"></div>
+</div>
+
+<div id="view-history" class="view">
+  <div id="history-list"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">添加题目</h3>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>章节</label>
+        <select id="f-chapter"></select>
+      </div>
+      <div class="form-group">
+        <label>题型</label>
+        <select id="f-type" onchange="onTypeChange()">
+          <option value="单选题">单选题</option>
+          <option value="多选题">多选题</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>题目</label>
+        <textarea id="f-question" rows="3"></textarea>
+      </div>
+      <div class="form-group" id="f-options-group">
+        <label>选项</label>
+        <div class="option-inputs" id="f-options-inputs"></div>
+      </div>
+      <div class="form-group">
+        <label>正确答案</label>
+        <div id="f-answer-area"></div>
+      </div>
+      <div class="form-group">
+        <label>图片（可选）</label>
+        <input type="file" id="f-image" accept="image/*" onchange="onImageSelect(event)">
+        <div id="f-image-preview" style="margin-top:8px"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" id="modal-save-btn" onclick="saveQuestion()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const CHAPTERS = ["绪论","第一章","第二章","第三章","第四章","第五章","第六章","第七章","综合多选"];
+const TYPES = ['单选题','多选题'];
+
+function getDefaultQuestions(){
+  return [{"sourceNumber":1,"chapter":"绪论","type":"单选题","question":"马克思一生最重要的理论发现是（ ）","options":{"A":"无产阶级革命和无产阶级专政学说","B":"社会主义和共产主义学说","C":"唯物史观和剩余价值学说","D":"关于无产阶级政党和无产阶级领袖的学说"},"id":1,"answer":"C","image":""},{"sourceNumber":2,"chapter":"绪论","type":"单选题","question":"首次系统阐述了历史唯物主义的基本观点，实现历史观上的伟大变革的马克思主义著作是（ ）","options":{"A":"《德意志意识形态》","B":"《共产党宣言》","C":"《1848—1850 年法兰西阶级斗争》","D":"《法兰西内战》"},"id":2,"answer":"A","image":""},{"sourceNumber":3,"chapter":"绪论","type":"单选题","question":"恩格斯于 1820 年 11 月 28 日出生在德国巴门市的一个工厂主家庭。他称自己一生所做的事就是“拉第二小提琴”。恩格斯不仅与马克思一起创立马克思主义，参加并指导国际工人运动，而且在传播和发展马克思主义方面作出了杰出的贡献。恩格斯全面阐述马克思主义理论体系的著作是（ ）","options":{"A":"《共产党宣言》","B":"《家庭、私有制和国家的起源》","C":"《反杜林论》","D":"《自然辩证法》"},"id":3,"answer":"C","image":""},{"sourceNumber":4,"chapter":"绪论","type":"单选题","question":"全部马克思主义学说的核心和理论结论是（ ）","options":{"A":"科学社会主义","B":"辩证唯物主义","C":"历史唯物主义","D":"剩余价值学说"},"id":4,"answer":"A","image":""},{"sourceNumber":5,"chapter":"绪论","type":"单选题","question":"马克思主义新世界观创立的关键在于马克思确立了（ ）","options":{"A":"剩余价值论","B":"阶级斗争理论","C":"无产阶级历史使命学说","D":"科学的实践观"},"id":5,"answer":"D","image":""},{"sourceNumber":6,"chapter":"绪论","type":"单选题","question":"马克思主义的直接理论来源是（ ）","options":{"A":"法国唯物主义、英国经验主义、德国理性主义","B":"细胞学说、能量守恒定律、生物进化论","C":"德国古典哲学、英国古典政治经济学、英法空想社会主义","D":"法国历史哲学、英国科学主义、欧洲人文主义"},"id":6,"answer":"C","image":""},{"sourceNumber":7,"chapter":"绪论","type":"单选题","question":"马克思主义哲学创立之后，开始出现了（ ）","options":{"A":"唯物论与唯心论的对立","B":"可知论与不可知论的对立","C":"辩证法与形而上学的对立","D":"唯物史观与唯心史观的对立"},"id":7,"answer":"D","image":""},{"sourceNumber":1,"chapter":"第一章","type":"单选题","question":"“哲学史宛如色彩斑斓的壁毯，其中唯物主义与唯心主义犹如浓粗的经线贯穿上下，而辩证法与 形而上学如同纬纱交织其中。”这句话形象地描绘了唯物主义和唯心主义以及辩证法和形而上学在哲学发展史上的对立和斗争。以下说法正确的是（ ）","options":{"A":"唯物主义就是辩证法","B":"唯心主义就是形而上学","C":"唯物主义、唯心主义和辩证法、形而上学是对哲学基本问题两个方面的不同回答","D":"唯物主义与唯心主义的对立和斗争中交织着辩证法与形而上学的对立和斗争"},"id":8,"answer":"D","image":""},{"sourceNumber":2,"chapter":"第一章","type":"单选题","question":"“意识是客观存在的主观映象”的命题是指（ ）","options":{"A":"意识是主体和客体连结和转化的中介","B":"意识是客观精神的主观映象","C":"意识的形式和内容是客观的","D":"意识的内容是客观的，形式是主观的"},"id":9,"answer":"D","image":""},{"sourceNumber":3,"chapter":"第一章","type":"单选题","question":"区分事物的依据是（ ）","options":{"A":"事物的本质属性","B":"事物各方面属性的总和","C":"事物量的规定性","D":"人的直觉"},"id":10,"answer":"A","image":""},{"sourceNumber":4,"chapter":"第一章","type":"单选题","question":"哲学的基础问题是（ ）","options":{"A":"人和自然的关系","B":"主体和客体的关系","C":"思维和存在的关系","D":"物质和运动的关系"},"id":11,"answer":"C","image":""},{"sourceNumber":5,"chapter":"第一章","type":"单选题","question":"在快节奏的生活、高强度的工作中，一些人面临着比较沉重的心理压力，如果得不到疏导，轻则影响工作效率，重则可能给身体带来负面影响。“心理体检”也应该得到重视，因为（ ）","options":{"A":"感觉和心理是人区别于动物的根本标志","B":"意识具有调控人的行为和生理活动的作用","C":"主观世界与客观世界的发展具有完全同步性","D":"人的本质属性是包括身体和心理在内的各种自然属性之和"},"id":12,"answer":"B","image":""},{"sourceNumber":6,"chapter":"第一章","type":"单选题","question":"唯物辩证法的扬弃范围是指（ ）","options":{"A":"新事物彻底抛弃旧事物","B":"事物发展过程的非连续性","C":"事物发展过程的连续性","D":"新事物对旧事物的既克服又保留"},"id":13,"answer":"D","image":""},{"sourceNumber":7,"chapter":"第一章","type":"单选题","question":"构成矛盾的两种基本属性是（ ）","options":{"A":"普遍性和特殊性","B":"同一性和斗争性","C":"绝对性和相对性","D":"对抗性和非对抗性"},"id":14,"answer":"B","image":""},{"sourceNumber":8,"chapter":"第一章","type":"单选题","question":"中国古代的“五行说 ”认为世界万物皆起源于金木水火土，这种观点属于( )","options":{"A":"客观唯心主义","B":"朴素唯物主义","C":"主观唯心主义","D":"形而上学唯物主义"},"id":15,"answer":"B","image":""},{"sourceNumber":9,"chapter":"第一章","type":"单选题","question":"“机不可失，时不再来 ”说的是 ( )","options":{"A":"时间的有限性","B":"时间的客观性","C":"时间的一维性","D":"时间的相对性"},"id":16,"answer":"C","image":""},{"sourceNumber":10,"chapter":"第一章","type":"单选题","question":"“人不能两次踏进同一条河流”和“人一次也不能踏进同一条河流。”这两种说法（ ）","options":{"A":"都是辩证法的观点","B":"都是诡辩论的观点","C":"前者是辩证法的观点，后者是诡辩论的观点","D":"前者是诡辩论的观点，后者是辩证法的观点"},"id":17,"answer":"C","image":""},{"sourceNumber":11,"chapter":"第一章","type":"单选题","question":"唯物主义一元论同唯心主义一元论的根本对立在于（ ）","options":{"A":"对世界构成形式的不同回答","B":"对世界存在状态的不同回答","C":"对世界是否可知的不同回答","D":"对世界本原的不同回答"},"id":18,"answer":"D","image":""},{"sourceNumber":12,"chapter":"第一章","type":"单选题","question":"“坐地日行八万里，巡天遥看一千河”的著名诗句所蕴含的哲理是（ ）","options":{"A":"物质运动的客观性和时空的主观性的统一","B":"物质运动的无限性和时空的有限性的统一","C":"物质运动的多样性和静止的单一性的统一","D":"物质运动的绝对性和静止的相对性的统一"},"id":19,"answer":"D","image":""},{"sourceNumber":13,"chapter":"第一章","type":"单选题","question":"区分事物发展过程中量变和质变的根本标志是（ ）","options":{"A":"事物的变化是否迅速","B":"事物的变化过程中是否有部分质变","C":"事物的变化是否超过度的范围","D":"事物的变化是否显著"},"id":20,"answer":"C","image":""},{"sourceNumber":14,"chapter":"第一章","type":"单选题","question":"事物发展过程中的“度”是指（ ）","options":{"A":"事物质变的关节点","B":"事物质变的临界点","C":"事物保持一定质的量的限度","D":"事物保持一定量的质的限度"},"id":21,"answer":"C","image":""},{"sourceNumber":15,"chapter":"第一章","type":"单选题","question":"发展的实质是新事物的产生和旧事物的灭亡。新、旧事物的区别在于（ ）","options":{"A":"出现时间的先后","B":"形式的新旧","C":"力量的大小对比","D":"同历史前进方向是否符合"},"id":22,"answer":"D","image":""},{"sourceNumber":16,"chapter":"第一章","type":"单选题","question":"唯物辩证法的否定之否定规律揭示了事物发展的（ ）","options":{"A":"方向和道路","B":"形式和状态","C":"结构和功能","D":"源泉和动力"},"id":23,"answer":"A","image":""},{"sourceNumber":17,"chapter":"第一章","type":"单选题","question":"《坛经》中记载：“时有风吹幡动，一僧曰风动，一僧曰幡动，议论不已。惠能进曰：不是风动，不是幡动，仁者心动。”这段话表明惠能关于运动的基本观点是（ ）","options":{"A":"运动是物质的根本属性","B":"运动与物质是不可分割的","C":"精神运动是物质运动的一种形式","D":"精神是运动的主体"},"id":24,"answer":"D","image":""},{"sourceNumber":18,"chapter":"第一章","type":"单选题","question":"恩格斯认为，全部哲学，特别是近代哲学的重大的基本问题是（ ）","options":{"A":"哲学与人类生存活动之间的内在联系问题","B":"人与周围世界的基本联系问题","C":"思维和存在的关系问题","D":"关于人的本质问题"},"id":25,"answer":"C","image":""},{"sourceNumber":19,"chapter":"第一章","type":"单选题","question":"在工作中防止“过”或“不及”的关键在于（ ）","options":{"A":"抓住事物的主要矛盾","B":"认识事物的量","C":"确定事物的质","D":"把握事物的度"},"id":26,"answer":"D","image":""},{"sourceNumber":20,"chapter":"第一章","type":"单选题","question":"中国古代哲人荀子说：“天行有常，不为尧存，不为桀亡。”这是一种（ ）","options":{"A":"宿命论观点","B":"唯意志论观点","C":"机械唯物论观点","D":"朴素唯物论观点"},"id":27,"answer":"D","image":""},{"sourceNumber":21,"chapter":"第一章","type":"单选题","question":"“观念的东西不外是移入人的头脑并在人的头脑中改造的物质的东西而已。”这个命题表明（ ）","options":{"A":"意识是客观存在的主观映象","B":"人脑是意识的源泉","C":"观念的东西和物质的东西并没有本质上的区别","D":"意识是人脑中特有的物质"},"id":28,"answer":"A","image":""},{"sourceNumber":22,"chapter":"第一章","type":"单选题","question":"相信“意念移物”，甚至相信可以用意念来直接改变物质结构，就是信奉（ ）","options":{"A":"主张精神主宰客观物质世界的主观唯心论","B":"主张精神是脱离人脑独立存在的客观唯心论","C":"认为人的思想是特殊物质的机械唯物主义","D":"认为人具有主观能动性的实践唯物主义"},"id":29,"answer":"A","image":""},{"sourceNumber":23,"chapter":"第一章","type":"单选题","question":"主观辩证法与客观辩证法的关系是（ ）","options":{"A":"反映与被反映的关系","B":"唯心主义与唯物主义的关系","C":"抽象与具体的关系","D":"唯心辩证法与唯物辩证法的关系"},"id":30,"answer":"A","image":""},{"sourceNumber":24,"chapter":"第一章","type":"单选题","question":"鲁迅在评《三国演义》时说：“至于写人，亦颇有失，以致欲显刘备之长厚而似伪，状诸葛之多智而近妖”。这一评述所蕴含的哲理是（ ）","options":{"A":"要区分事物的两重性","B":"要把握事物的度","C":"对事物既要肯定，又要否定","D":"要把事物看作一个整体"},"id":31,"answer":"B","image":""},{"sourceNumber":25,"chapter":"第一章","type":"单选题","question":"人们常说：“前途是光明的，道路是曲折的。”这句话体现的最主要的唯物辩证法原理是（ ）","options":{"A":"否定之否定规律","B":"事物普遍联系的原理","C":"世界永恒发展的原理","D":"量变质变规律"},"id":32,"answer":"A","image":""},{"sourceNumber":26,"chapter":"第一章","type":"单选题","question":"没有上，就无所谓下；没有先进，就无所谓落后；没有正确，就无所谓错误。这说明（ ）","options":{"A":"矛盾双方是相互排斥的","B":"矛盾双方是相互渗透的","C":"矛盾双方是相互依存的","D":"矛盾双方是相互转化的"},"id":33,"answer":"C","image":""},{"sourceNumber":27,"chapter":"第一章","type":"单选题","question":"不少人体验过这样的小测试：面对同一张人物肖像，有人看到了满脸皱纹的老太太，有人看到的却是正值青春妙龄的年轻姑娘。关注角度、聚焦方位不同，看到的图像竟也存在天壤之别。 对同一张肖像的两种看法都是（ ）","options":{"A":"客观事物的主观映象","B":"对现实世界的歪曲反映","C":"人脑中固有形象的表现形式","D":"意识主观自生的产物"},"id":34,"answer":"A","image":""},{"sourceNumber":28,"chapter":"第一章","type":"单选题","question":"民间有一种迷信说法叫作“喜鹊叫喜，乌鸦叫丧”。这句话的错误在于否定了联系的（ ）","options":{"A":"普遍性","B":"多样性","C":"客观性","D":"条件性"},"id":35,"answer":"C","image":""},{"sourceNumber":29,"chapter":"第一章","type":"单选题","question":"“橘生淮南则为橘，生为淮北则为枳，叶徒相似，其实味不同。所以然者何？水土异也。”橘逾淮为枳说明了（ ）","options":{"A":"事物的发展变化以时间地点和条件为转移","B":"事物的普遍联系是通过中介来实现的","C":"任何实体事物都是普遍联系之网上的一个网结","D":"事物的变化和发展是一个过程"},"id":36,"answer":"A","image":""},{"sourceNumber":30,"chapter":"第一章","type":"单选题","question":"习近平强调，“历史是最好的教科书”，“历史的经验值得注意，历史的教训更应引以为戒”，“中国革命历史是最好的营养剂”。人们能够从历史中汲取经验教训，是因为（ ）","options":{"A":"历史规律和自然规律有惊人的相似","B":"人类历史发展存在着不以人的意志为转移的规律","C":"历史总是在循环往复中不断向前发展","D":"人类已经完全掌握了历史发展的内在规律"},"id":37,"answer":"B","image":""},{"sourceNumber":1,"chapter":"第二章","type":"单选题","question":"认识的本质是主体对（ ）","options":{"A":"人的心灵活动的内省","B":"客观事物的直观反映","C":"客观事物的能动反映","D":"对客体的选择和重构"},"id":38,"answer":"C","image":""},{"sourceNumber":2,"chapter":"第二章","type":"单选题","question":"“从物到感觉和思想”与“从思想和感觉到物”是（ ）","options":{"A":"辩证法与形而上学的对立","B":"可知论与不可知论的对立","C":"经验论与唯理论的对立","D":"唯物主义与唯心主义的对立"},"id":39,"answer":"D","image":""},{"sourceNumber":3,"chapter":"第二章","type":"单选题","question":"辩证唯物主义认为，认识的本质是（ ）","options":{"A":"主体对各种认识要素的建构","B":"主体通过实践对客体的能动反映","C":"主体对客体本质的内省","D":"主体对客体信息的选择"},"id":40,"answer":"B","image":""},{"sourceNumber":4,"chapter":"第二章","type":"单选题","question":"真理的相对性应理解为（ ）","options":{"A":"真理与谬误之间没有确定的界限","B":"对同一对象不同的乃至对立的认识都是真理","C":"真理的标准是多重的","D":"真理有待扩展和深化"},"id":41,"answer":"D","image":""},{"sourceNumber":5,"chapter":"第二章","type":"单选题","question":"实践高于理论的认识，是因为实践具有（ ）","options":{"A":"普遍性","B":"绝对性","C":"客观实在性","D":"直接现实性"},"id":42,"answer":"D","image":""},{"sourceNumber":6,"chapter":"第二章","type":"单选题","question":"根据认识的发展规律，在认识的“熟知”与“真知”问题上的正确观点是（ ）","options":{"A":"熟知即真知","B":"熟知不等于真知","C":"熟知起源于真知","D":"熟知必然转化为真知"},"id":43,"answer":"B","image":""},{"sourceNumber":7,"chapter":"第二章","type":"单选题","question":"一种认识是不是真理，要看它（ ）","options":{"A":"能否满足人的需要","B":"能否被多数人认可","C":"能否付诸实践","D":"能否在实践中最终取得预期的效果"},"id":44,"answer":"D","image":""},{"sourceNumber":8,"chapter":"第二章","type":"单选题","question":"未来学家尼葛洛庞蒂说：“预测未来的最好办法就是把它创造出来。”从认识与实践的关系看，这句话对我们的启示是（ ）","options":{"A":"认识总是滞后于实践","B":"实践是认识的先导","C":"实践高于认识","D":"实践与认识是合一的"},"id":45,"answer":"C","image":""},{"sourceNumber":9,"chapter":"第二章","type":"单选题","question":"“只有音乐才能激起人的音乐感；对于没有音乐感的耳朵说来，最美的音乐也毫无意义”。这表明（ ）","options":{"A":"人的认识是主体与客体相互作用的过程和结果","B":"人的感觉能力决定认识的产生和发展","C":"人的认识能力是由人的生理结构决定的","D":"事物因人的感觉而存在"},"id":46,"answer":"A","image":""},{"sourceNumber":10,"chapter":"第二章","type":"单选题","question":"温家宝总理在给一位国务院参事的回信中，引用了两句诗：“知屋漏者在宇下，知政失者在草野。”这一古训蕴含的哲理是（ ）","options":{"A":"人的经验是判断是非得失的根本尺度","B":"直接经验比间接经验更重要","C":"感性认识高于理性认识","D":"人民群众的直接经验即实践是认识的重要基础"},"id":47,"answer":"D","image":""},{"sourceNumber":11,"chapter":"第二章","type":"单选题","question":"在听完一位成功的企业家讲课后，一些来自企业的学员感到有些失望，便问他：“你讲的那些内容我们也差不多知道，可为什么我们之间的差距会那么大呢？”这位企业家回答说：“那是因为你们仅是知道，而我却做到了，这就是我们的差别。”这句话表明了实践高于理论认识，因为实践具有（ ）","options":{"A":"普遍有效性","B":"客观规律性","C":"主体能动性","D":"直接现实性"},"id":48,"answer":"D","image":""},{"sourceNumber":12,"chapter":"第二章","type":"单选题","question":"1978 年关于真理标准大讨论是一场新的思想解放运动。实践之所以成为检验真理的唯一标准，是由（ ）","options":{"A":"真理的主观性和实践的客观性所要求的","B":"真理的相对性和实践的绝对性所预设的","C":"真理的属性和实践的功能所规定的","D":"真理的本性和实践的特点所决定的"},"id":49,"answer":"D","image":""},{"sourceNumber":13,"chapter":"第二章","type":"单选题","question":"恩格斯说：“鹰比人看得远得多，但是人的眼睛识别的东西远胜于鹰。狗比人具有锐敏得多的嗅觉，但是它连被人当作为各种物的特定标志的不同气味的百分之一也辨别不出来。”人的感官的识别能力高于动物，除了人脑及感官发育得更完美之外，还因为（ ）","options":{"A":"人不仅有感觉还有思维","B":"人不仅有理性还有非理性","C":"人不仅有直觉还有想象","D":"人不仅有生理机能还有心理活动"},"id":50,"answer":"A","image":""},{"sourceNumber":14,"chapter":"第二章","type":"单选题","question":"有一种观点认为，“自由不在于幻想中摆脱自然规律而独立，而在于认知这些规律，从而能够有计划地使自然规律为一定的目的服务”。还有一种观点认为，“‘自由’倒过来就是‘由自’，因此‘自由’等于‘由自’，‘由自’即是随心所欲”，这两种关于自由的观点（ ）","options":{"A":"前者是唯物辩证的观点，后者是唯意志论的观点","B":"前者是机械唯物主义的观点，后者是唯心主义的观点","C":"前者是主观唯心主义的观点，后者是唯物辩证法的观点","D":"前者是历史唯心主义的观点，后者是历史唯物主义的观点"},"id":51,"answer":"A","image":""},{"sourceNumber":15,"chapter":"第二章","type":"单选题","question":"逐渐“飞入寻常百姓家”的人工智能对人类的社会生活产生了巨大影响，对此，技术乐观派认为人工智能为人类发展更新了“发动机”，悲观派则认为人工智能的发展可能导致“人类的终结”。对人工智能社会效用的评价是（ ）","options":{"A":"对客观事物发展规律的真理性评价","B":"对主体需要发展程度的认知性评价","C":"受主体情感、兴趣和爱好影响的主观性评价","D":"对客观事物的属性及其满足主体需要的价值性评价"},"id":52,"answer":"D","image":""},{"sourceNumber":16,"chapter":"第二章","type":"单选题","question":"法国科学家路易·巴斯德说：“在观察事物之际，机遇偏爱有准备的头脑。”这句话强调了（ ）","options":{"A":"人们对每一件事物都要细心观察","B":"人们在认识事物时要有理性的指导","C":"人们获得感性经验的重要性","D":"人们要充分发挥主观能动性"},"id":53,"answer":"B","image":""},{"sourceNumber":1,"chapter":"第三章","type":"单选题","question":"社会历史观的基本问题是（ ）","options":{"A":"杰出人物与人民群众的关系问题","B":"生产力与生产关系的关系问题","C":"社会存在与社会意识的关系问题","D":"经济基础与上层建筑的关系问题"},"id":54,"answer":"C","image":""},{"sourceNumber":2,"chapter":"第三章","type":"单选题","question":"上层建筑对社会发展作用的性质取决于（ ）","options":{"A":"上层建筑中国家政权的性质","B":"上层建筑中意识形态的性质","C":"上层建筑所服务的经济基础的性质","D":"上层建筑本身是否完善"},"id":55,"answer":"C","image":""},{"sourceNumber":3,"chapter":"第三章","type":"单选题","question":"社会生产力水平主要的物质标志是（ ）","options":{"A":"劳动者的技术水平","B":"劳动对象","C":"生产工具","D":"科学技术"},"id":56,"answer":"C","image":""},{"sourceNumber":4,"chapter":"第三章","type":"单选题","question":"马克思主义揭示人的本质的出发点是（ ）","options":{"A":"人的自身需要","B":"人类的共同利益","C":"人的社会关系","D":"人的自然属性"},"id":57,"answer":"C","image":""},{"sourceNumber":5,"chapter":"第三章","type":"单选题","question":"“历史不过是追求着自己目的的人的活动而已”，这句话表明（ ）","options":{"A":"人是研究社会历史的出发点","B":"人们自己创造自己的历史","C":"历史发展的方向是人自己决定的","D":"人的自我保存和发展是历史的原动力"},"id":58,"answer":"B","image":""},{"sourceNumber":6,"chapter":"第三章","type":"单选题","question":"在社会生活中，上层建筑对于社会发展作用的性质取决于（ ）","options":{"A":"国家政权的阶级属性","B":"它所服务的经济基础的性质","C":"社会意识形态的性质","D":"社会生产力的性质"},"id":59,"answer":"B","image":""},{"sourceNumber":7,"chapter":"第三章","type":"单选题","question":"衡量生产力水平的客观尺度是（ ）","options":{"A":"劳动工具的状况","B":"劳动者的素质","C":"劳动对象的广度和深度","D":"劳动产品的数量和质量"},"id":60,"answer":"A","image":""},{"sourceNumber":8,"chapter":"第三章","type":"单选题","question":"社会主义经济体制是指（ ）","options":{"A":"社会主义的基本经济制度","B":"社会主义生产关系的总和","C":"社会主义生产关系的具体形式及其运行方式","D":"社会主义生产、分配、交换、消费的体系","E":"社会主义生产关系与生产力的统一"},"id":61,"answer":"C","image":""},{"sourceNumber":9,"chapter":"第三章","type":"单选题","question":"生产关系是人们在生产过程中结成的（ ）","options":{"A":"人与自然的关系","B":"人与人的物质利益关系","C":"管理与被管理的关系","D":"分工协作关系"},"id":62,"answer":"B","image":""},{"sourceNumber":10,"chapter":"第三章","type":"单选题","question":"制约人的行为和动机的根本条件是（ ）","options":{"A":"传统意识","B":"阶级关系","C":"生产方式","D":"政治制度"},"id":63,"answer":"C","image":""},{"sourceNumber":11,"chapter":"第三章","type":"单选题","question":"大众心理影响经济走势，能正确解释这一现象的观点是（ ）","options":{"A":"社会意识对社会存在具有决定作用","B":"社会心理可以左右社会发展发向","C":"只有正确的社会意识才能影响社会发展","D":"社会意识反作用于社会存在"},"id":64,"answer":"D","image":""},{"sourceNumber":12,"chapter":"第三章","type":"单选题","question":"先进生产力的集中体现和主要标志是（ ）","options":{"A":"劳动者","B":"劳动对象","C":"科学技术","D":"管理方式"},"id":65,"answer":"C","image":""},{"sourceNumber":13,"chapter":"第三章","type":"单选题","question":"生产的社会条件中，最基本、最重要的是（ ）","options":{"A":"政治法律制度","B":"生产关系","C":"历史文化传统","D":"伦理道德规范"},"id":66,"answer":"B","image":""},{"sourceNumber":14,"chapter":"第三章","type":"单选题","question":"唯物史观认为，人类的第一个历史活动是（ ）","options":{"A":"吃喝穿住","B":"物质生活资料的生产","C":"人的自觉意识活动","D":"结成社会关系"},"id":67,"answer":"B","image":""},{"sourceNumber":15,"chapter":"第三章","type":"单选题","question":"“许多事情我们可以讲一千个理由、一万个理由，但老百姓吃不上饭，就没有理由。‘民以食为天’。”这段话表明（ ）","options":{"A":"人们首先必须吃、喝、住、穿，然后才能从事政治、科学、艺术、宗教等等活动","B":"人的生理需求是历史的基础","C":"人的自然属性决定着人的本质","D":"人的物质欲望是社会发展的根本动力"},"id":68,"answer":"A","image":""},{"sourceNumber":16,"chapter":"第三章","type":"单选题","question":"列宁说：“意识到自己的奴隶地位而与之斗争的奴隶，是革命家。没有意识到自己的奴隶的地位而过着默默无言、浑浑噩噩，忍气吞声的奴隶生活的奴隶，是十足的奴隶。对奴隶生活的各种好处津津乐道，并对和善的好主人感激不尽以至垂涎欲滴的奴隶是奴才，是无耻之徒。”这三种奴隶的思想意识之所以有如此大的差异，是由于（ ）","options":{"A":"人的社会意识并不都是社会存在的反映","B":"人的社会意识与社会存在具有不一致性","C":"人的社会意识中的各种形式之间相互作用","D":"人的社会意识具有历史继承性"},"id":69,"answer":"B","image":""},{"sourceNumber":17,"chapter":"第三章","type":"单选题","question":"“文化蕴藏着巨大的力，这种‘力’不同于物理学上的‘力’，物理的‘力’是人类用来‘化’自然界的，文化的‘力’是用来‘化’自身的。”这一说法表明（ ）","options":{"A":"文化具有培育和塑造人的功能","B":"文化构造了人的本质","C":"文化是社会发展的主导力量","D":"文化是历史进步的源泉"},"id":70,"answer":"A","image":""},{"sourceNumber":18,"chapter":"第三章","type":"单选题","question":"卢梭在《论人类不平等的起源和基础》中说道：“我认为，在人类的一切知识中，最有用但也最不完善的知识就是关于人的知识。”马克思的唯物史观破解了人是什么这一“司芬克斯之谜”。马克思在《关于费尔巴哈的提纲》中指出，人的本质在其现实性上是（ ）","options":{"A":"自然属性和社会属性的内在统一","B":"所有人共同属性的概括","C":"一切社会关系的总和","D":"自由理性的外化"},"id":71,"answer":"C","image":""},{"sourceNumber":19,"chapter":"第三章","type":"单选题","question":"社会存在是指社会的物质生活条件，它有多方面的内容，其中最能集中体现人类社会物质性的是（ ）","options":{"A":"社会形态","B":"地理环境","C":"人口因素","D":"生产方式"},"id":72,"answer":"D","image":""},{"sourceNumber":20,"chapter":"第三章","type":"单选题","question":"社会存在决定社会意识，社会意识是社会存在的反映。社会意识具有相对独立性，即它在反映社会存在的同时，还有自己特有的发展形式和规律。社会意识相对独立性最突出的表现是（ ）","options":{"A":"社会意识内部各种形式之间的相互作用和影响","B":"社会意识与社会存在发展的不完全同步性","C":"社会意识各种形式各自具有其历史继承性","D":"社会意识对社会存在具有能动的反作用"},"id":73,"answer":"D","image":""},{"sourceNumber":1,"chapter":"第四章","type":"单选题","question":"具体劳动和抽象劳动的区别在于（ ）","options":{"A":"具体劳动和抽象劳动是两个不同的劳动过程","B":"具体劳动是体力劳动，抽象劳动是脑力劳动","C":"具体劳动创造使用价值，抽象劳动形成价值","D":"具体劳动形成价值，抽象劳动创造使用价值"},"id":74,"answer":"C","image":""},{"sourceNumber":2,"chapter":"第四章","type":"单选题","question":"资本主义利润率等于剩余价值与（ ）","options":{"A":"可变资本之比","B":"不变资本之比","C":"全部预付资本之比","D":"产业资本之比"},"id":75,"answer":"C","image":""},{"sourceNumber":3,"chapter":"第四章","type":"单选题","question":"货币所以能执行价值尺度的职能，是因为（ ）","options":{"A":"它能衡量其它商品价值的大小","B":"它是社会劳动的产物，本身具有价值","C":"它具有计量单位","D":"它可以是观念上的货币"},"id":76,"answer":"B","image":""},{"sourceNumber":4,"chapter":"第四章","type":"单选题","question":"资本家竞相改进技术的直接动因是（ ）","options":{"A":"降低劳动力价值","B":"追逐超额剩余价值","C":"获取绝对剩余价值","D":"获取相对剩余价值"},"id":77,"answer":"B","image":""},{"sourceNumber":5,"chapter":"第四章","type":"单选题","question":"资本主义社会最简单、最普通和最基本的关系是（ ）","options":{"A":"阶级关系","B":"商品交换关系","C":"金钱关系","D":"竞争关系"},"id":78,"answer":"B","image":""},{"sourceNumber":6,"chapter":"第四章","type":"单选题","question":"资本主义再生产的实质是（ ）","options":{"A":"简单再生产和扩大再生产的统一","B":"劳动过程和价值形成过程的统一","C":"物质资料再生产与劳动力再生产的统一","D":"物质资料再生产与资本主义生产关系再生产的统一"},"id":79,"answer":"D","image":""},{"sourceNumber":7,"chapter":"第四章","type":"单选题","question":"平均利润形成后，商品市场价格上下波动围绕的中心是（ ）","options":{"A":"生产价格","B":"成本价格","C":"同一部分商品的平均价格","D":"同一部分商品的平均成本价格"},"id":80,"answer":"A","image":""},{"sourceNumber":8,"chapter":"第四章","type":"单选题","question":"货币能够执行价值尺度的职能，因为货币（ ）","options":{"A":"有特殊的使用价值","B":"是商品交换的媒介","C":"自身也有价值","D":"可作为支付手段"},"id":81,"answer":"C","image":""},{"sourceNumber":9,"chapter":"第四章","type":"单选题","question":"产业资本划分为货币资本、生产资本、商品资本的依据是资本各个部分（ ）","options":{"A":"在价值增殖过程中的作用不同","B":"价值周转方式的不同","C":"存在的物质形态不同","D":"在循环中的职能不同"},"id":82,"answer":"D","image":""},{"sourceNumber":10,"chapter":"第四章","type":"单选题","question":"马克思在研究商品时，之所以考察商品的使用价值，因为使用价值是（ ）","options":{"A":"构成财富的物质内容","B":"人类生存、发展的物质条件","C":"满足人们需要的物质实体","D":"商品交换价值的物质承担者"},"id":83,"answer":"D","image":""},{"sourceNumber":11,"chapter":"第四章","type":"单选题","question":"近年来，数字货币的概念越来越火热，引起了人们对货币本质的新一轮讨论。有专家指出，随着经济的发展和技术的进步，货币在发展过程中被不同的价值符号所代表，从金属货币、纸 币、电子货币到数字货币不断转变。每种不同的货币形式代表了人们不同的信任形式。马克思主义认为，货币是（ ）","options":{"A":"能够带来剩余价值的价值","B":"资本的唯一物质形态","C":"商品特有的社会属性","D":"固定充当一般等价物的商品"},"id":84,"answer":"D","image":""},{"sourceNumber":12,"chapter":"第四章","type":"单选题","question":"考察社会总资本再生产的核心问题是（ ）","options":{"A":"价值如何增殖","B":"价值和剩余价值的形成","C":"剩余价值的实现","D":"社会总产品的实现"},"id":85,"answer":"D","image":""},{"sourceNumber":13,"chapter":"第四章","type":"单选题","question":"资本家普遍获得相对剩余价值是（ ）","options":{"A":"单个资本家采用先进技术降低商品个别价值的结果","B":"单个资本家压低劳动力价值缩短工人必要劳动时间的结果","C":"资本家延长工人劳动时间增加工人剩余劳动时间的结果","D":"各个资本家追求超额剩余价值的结果"},"id":86,"answer":"D","image":""},{"sourceNumber":14,"chapter":"第四章","type":"单选题","question":"货币的本质是（ ）","options":{"A":"商品交换的媒介物","B":"商品价值的一般等价物","C":"商品的等价物","D":"商品相对价值形式"},"id":87,"answer":"B","image":""},{"sourceNumber":15,"chapter":"第四章","type":"单选题","question":"在资本主义社会里，资本家雇佣工人进行劳动并支付相应的工资。资本主义工资本质是（ ）","options":{"A":"工人所获得的资本家的预付资本","B":"工人劳动力的价值或价格","C":"工人所创造的剩余价值的一部分","D":"工人全部劳动的报酬"},"id":88,"answer":"B","image":""},{"sourceNumber":16,"chapter":"第四章","type":"单选题","question":"某资本家投资 100 万元，每次投资所得的利润是 15 万元，假定其预付资本的有机构成是 4:1，那么该资本家每次投资所实现的剩余价值率为（ ）","options":{"A":"15%","B":"75%","C":"100%","D":"125%"},"id":89,"answer":"B","image":""},{"sourceNumber":17,"chapter":"第四章","type":"单选题","question":"社会生产是连续不断进行的，这种连续不断重复的生产就是再生产。每次经济危机发生期间，总有许多企业或因产品积压、或因订单缺乏等致使其无法继续进行再生产而被迫倒闭。那些因产品积压而倒闭的企业主要是由于无法实现其生产过程中的（ ）","options":{"A":"劳动补偿","B":"价值补偿","C":"实物补尝","D":"增殖补偿"},"id":90,"answer":"B","image":""},{"sourceNumber":18,"chapter":"第四章","type":"单选题","question":"某资本家投资100 万元创办企业从事生产，60 万元用于固定资本，以购买机器设备等，40 万元用于流动资本，以购买原材料和劳动力等——其中购买劳动力支付 10 万元。一轮生产结束后，该企业的总资本达到了 120 万元，那么该企业的剩余价值率为（ ）","options":{"A":"20%","B":"50%","C":"100%","D":"200%"},"id":91,"answer":"D","image":""},{"sourceNumber":19,"chapter":"第四章","type":"单选题","question":"德文版《资本论》第一卷于 1867 年 9 月在汉堡出版，其影响力历经 150 年风雨而不衰，至今对我们分析、理解现实经济问题依然具有很强的指导意义。马克思主义政治经济学的理论十分丰富，其中“理解政治经济学的枢纽”的理论是（ ）","options":{"A":"价值规律理论","B":"商品二因素理论","C":"劳动二重性理论","D":"剩余价值理论"},"id":92,"answer":"C","image":""},{"sourceNumber":20,"chapter":"第四章","type":"单选题","question":"在以私有制经济为基础的商品经济中，商品生产者的私人劳动生产的产品是否与社会的需求相适应，作为具体劳动的有用性质能否为社会所承认，商品的使用价值和价值之间的矛盾是否能得到解决，决定着商品生产者的命运。以私有制为基础的商品经济的基本矛盾是（ ）","options":{"A":"使用价值和价值之间的矛盾","B":"私人劳动和社会劳动之间的矛盾","C":"具体劳动和抽象劳动的矛盾","D":"脑力劳动和体力劳动的矛盾"},"id":93,"answer":"B","image":""},{"sourceNumber":1,"chapter":"第五章","type":"单选题","question":"垄断的产生是由于（ ）","options":{"A":"实行殖民政策的结果","B":"资本主义生产和资本越来越集中的必然结果","C":"资本家剩余价值的直接结果","D":"资本家攫取高额垄断利润的结果"},"id":94,"answer":"B","image":""},{"sourceNumber":2,"chapter":"第五章","type":"单选题","question":"社会主义经济制度必然代替资本主义经济制度由于（ ）","options":{"A":"这两种制度在平行发展过程中共同点越来越多","B":"资本主义经济制度内部社会主义因素日益增长","C":"资本主义基本矛盾激化","D":"理性和正义的胜利"},"id":95,"answer":"C","image":""},{"sourceNumber":3,"chapter":"第五章","type":"单选题","question":"按照唯物辩证法的观点，资本主义社会从自由竞争到垄断阶段的变化是（ ）","options":{"A":"根本性的质变","B":"单纯的量变","C":"总的量变过程中的部分质变","D":"质变过程中的量的扩张"},"id":96,"answer":"C","image":""},{"sourceNumber":4,"chapter":"第五章","type":"单选题","question":"第二次世界大战后，国际分工的基本特征是（ ）","options":{"A":"不同生产部门之间的分工","B":"工业产品的专业化和工艺的专业化","C":"以自然资源为基础的分工","D":"工业国与农业原料国之间的分工"},"id":97,"answer":"B","image":""},{"sourceNumber":5,"chapter":"第五章","type":"单选题","question":"在资本主义经济发展过程中，资本集中的直接后果是（ ）","options":{"A":"社会总资本急剧增加","B":"个别资本规模迅速扩大","C":"绝对剩余价值总量快速增长","D":"社会就业率明显提高"},"id":98,"answer":"B","image":""},{"sourceNumber":6,"chapter":"第五章","type":"单选题","question":"国家垄断资本主义的产生和发展从根本上说是（ ）","options":{"A":"国内市场竞争激化的结果","B":"国际竞争激化的结果","C":"垄断统治加强的结果","D":"生产社会化与资本主义私人占有制之间矛盾发展的结果"},"id":99,"answer":"D","image":""},{"sourceNumber":7,"chapter":"第五章","type":"单选题","question":"国家垄断资本主义条件下，政府对经济生活进行干预和调节的实质是（ ）","options":{"A":"维护垄断资产阶级的整体利益和长远利益","B":"维持资本主义经济稳定增长","C":"消除或防止经济危机的爆发","D":"提高资本主义社会的整体福利水平"},"id":100,"answer":"A","image":""},{"sourceNumber":8,"chapter":"第五章","type":"单选题","question":"与第二次世界大战前的资本主义相比，当代资本主义在许多方面已经并正 在发生着深刻的变化。正确分析这些新变化发生的原因，有利于我们科学而全面地认识当代资本主义社会。导致当代资本主义新变化发生的根本推动力量是（ ）","options":{"A":"改良主义政党对资本主义制度的改革","B":"工人阶级争取自身权利的斗争","C":"科学技术革命和生产力的发展","D":"社会主义制度的优越性对资本主义的影响"},"id":101,"answer":"C","image":""},{"sourceNumber":9,"chapter":"第五章","type":"单选题","question":"第二次世界大战以后，资本主义国家经历了第三次科技革命，机器大工业发展到自动化阶段。智能化工厂创造出了较高的生产效率，显露出巨大的竞争力。企业在“机器换人”中取得了一定的经济效益。这意味着率先使用机器人的个别企业（ ）","options":{"A":"剩余价值来源的改变","B":"资本技术构成的提高","C":"所生产商品价值提高","D":"获得更多的社会平均利润"},"id":102,"answer":"B","image":""},{"sourceNumber":10,"chapter":"第五章","type":"单选题","question":"20 世纪 70 年代以来，西方资本主义国家的金融资本急剧膨胀，这一方面促进了资本主义的发展，另一方面造成了经济过度虚拟化，致使金融危机频繁发生，西方资本主义金融资本快速发展壮大的重要制度条件是（ ）","options":{"A":"金融自由化与金融创新","B":"技术创新与大力发展互联网金融","C":"全面私有化与放松金融监管","D":"去工业化与大力发展现代化服务业"},"id":103,"answer":"A","image":""},{"sourceNumber":11,"chapter":"第五章","type":"单选题","question":"从历史发展的角度看，资本主义生产资料所有制是不断演进和变化的，当今资本主义社会居主导地位的资本所有制形式是（ ）","options":{"A":"法人资本所有制","B":"私人资本所有制","C":"私人股份资本所有制","D":"垄断资本私人所有制"},"id":104,"answer":"A","image":""},{"sourceNumber":12,"chapter":"第五章","type":"单选题","question":"马克思指出，资本主义生产在“发展社会劳动的生产力”的同时，也“不自觉地创造着一种更高级的生产形式的物质条件。”这表明（ ）","options":{"A":"资本主义生产方式能够无限制解放和发展社会生产力","B":"资本越发展越有利于巩固资本主义","C":"资本越扩张越不利于创造更多的物质财富","D":"资本主义生产是一种历史的、过渡性生产形式"},"id":105,"answer":"D","image":""},{"sourceNumber":13,"chapter":"第五章","type":"单选题","question":"与第二次与界大战前的资本主义相比，当代资本主义在许多方面已经并正在发生着深刻的变化。当代资本主义社会，大公司经营活动的实际控制者是（ ）","options":{"A":"高级职业经理","B":"股东大会","C":"监事会","D":"董事长"},"id":106,"answer":"A","image":""},{"sourceNumber":1,"chapter":"第六章","type":"单选题","question":"从空想社会主义诞生到《共产党宣言》问世，其间空想社会主义经历了330多年的发展历程。 空想社会主义的开山之作是","options":{"A":"《太阳城》","B":"《 乌托邦》","C":"《 自然法典》","D":"《 论法制或法律的原则》"},"id":107,"answer":"B","image":""},{"sourceNumber":2,"chapter":"第六章","type":"单选题","question":"列宁说：“如果社会主义在经济上尚未成熟，任何起义也创造不出社会主义来”。这就是说（ ）","options":{"A":"社会主义革命只能在经济发达的国家发生和取得胜利","B":"社会主义革命需要一定的物质前提","C":"只能靠经济力量去实现社会主义","D":"社会主义革命能够在资本主义内部自发产生"},"id":108,"answer":"B","image":""},{"sourceNumber":3,"chapter":"第六章","type":"单选题","question":"邓小平指出：“社会主义究竟是个什么样子，苏联搞了很多年，也并没有完全搞清楚。可能列宁的思路比较好，搞了个新经济政策，但是后来苏联的模式僵化了。”列宁新经济政策关于社会主义的思维之所以“比较好”是因为（ ）","options":{"A":"提出了比较系统的社会主义建设纲领","B":"根据俄国的实际情况来探索社会主义建设的道路","C":"为俄国找到了一种比较成熟的社会发展模式","D":"按照马克思主义关于未来社会主义的设想来建设社会主义"},"id":109,"answer":"B","image":""},{"sourceNumber":4,"chapter":"第六章","type":"单选题","question":"马克思主义政党是科学社会主义与工人运动相结合的产物，是工人阶级的先锋队，这表明（ ）","options":{"A":"马克思主义政党以工人阶级为基础","B":"马克思主义政党即工人阶级本身","C":"马克思主义政党的阶级性是其先进性的根本前提","D":"马克思主义政党的先进性决定了工人阶级的先进性"},"id":110,"answer":"A","image":""},{"sourceNumber":1,"chapter":"第七章","type":"单选题","question":"1894 年 1 月 3 日，意大利人卡内帕给恩格斯写信，请求他为即将在日内瓦出版的《新纪元》周刊的创刊号题词，而且要求尽量用简短的字句来表述未来的社会主义纪元的基本思想，以区别于伟大诗人但丁的对旧纪元所作的“一些人统治，另一些人受苦难”的界定。恩格斯回答说，这就是：“代替那存在着阶级和阶级对立的资产阶级旧社会的，将是这样一个联合体，在那里，每个人的自由发展是一切人的自由发展的条件。”这段话表明，马克思主义追求的根本价值目标是（ ）","options":{"A":"实现人的自由而全面的发展","B":"实现人类永恒不变的普适价值","C":"建立一个四海之内皆兄弟的大同世界","D":"建立一个自由，平等，博爱的理性王国"},"id":111,"answer":"A","image":""},{"sourceNumber":2,"chapter":"第七章","type":"单选题","question":"共产主义是人类解放的实现。共产主义社会的根本特征是（ ）","options":{"A":"物质财富极大丰富，消费资料按需分配","B":"社会关系高度和谐","C":"人们精神境界极大提高","D":"实现人的自由而全面的发展"},"id":112,"answer":"D","image":""},{"sourceNumber":1,"chapter":"综合多选","type":"多选题","question":"下列格言或成语中，体现量变质变规律的有（ ）","options":{"A":"九层之台，起于垒土","B":"有无相生，前后相随","C":"为山九仞，功亏一篑","D":"千里之堤，溃于蚁穴"},"id":113,"answer":"ACD","image":""},{"sourceNumber":2,"chapter":"综合多选","type":"多选题","question":"长期以来，人们把欧几里得几何学看作揭示空间特性的绝对真理的体系。而德国数学家黎曼在 19世纪中提出了另一种几何学，打破了很多人平时认为理所应当的常识，比如黎曼几何学三角 形的三内角之和大于180°。这种创新性的理论在当时并不被重视，甚至受到嘲讽，但是在后来 却成为爱因斯坦创立广义相对论的重要数学工具，可以用来反映天体运行的大尺度宇宙空间的 特性。这一事实说明（ ）","options":{"A":"实践检验和证明真理是一个过程","B":"真理既是绝对的，又是相对的","C":"在科学研究中，经验是不可靠","D":"人们在一定条件下的正确认识是有限度的"},"id":114,"answer":"ABD","image":""},{"sourceNumber":3,"chapter":"综合多选","type":"多选题","question":"虚拟现实技术是一种运用计算机仿真系统创建多源信息融合的交互式三维动态实景以及动作仿真的技术，可以给使用者提供沉浸性，多感知性，交互性的互动体验，虚拟现实技术所构造的虚拟环境说明（ ）","options":{"A":"物质世界不再具有客观实在性","B":"物质世界的存在形式具有多样性","C":"信息是独立于物质和意识的第三种存在状态","D":"人们可以通过实践创造出自然界原本不存在的现实状态"},"id":115,"answer":"BD","image":""},{"sourceNumber":4,"chapter":"综合多选","type":"多选题","question":"如今，“逆袭”“超燃”“躺平”“凡尔赛”“YYDS”等网络热词令人目不暇接，了解这些网络话的意思用法，几乎成了网上冲浪的必修课。嵌入日常生活交流的网络热词，为语言的发展带来新语料，也能够让人们一窥当下的社会生活和社会心态。网络热词流行的现象表明（ ）","options":{"A":"社会心态是社会生产和生活的反映","B":"社会意识随着社会存在的发展而变化","C":"社会意识是主体对社会生活的自发反映","D":"社会心态的差异性决定社会生活的多样性"},"id":116,"answer":"AB","image":""},{"sourceNumber":5,"chapter":"综合多选","type":"多选题","question":"马克思主义是关于无产阶级和人类解放的科学，实现共产主义是全人类解放的根本体现。人类解放包括（ ）","options":{"A":"从自然的压迫下解放出来","B":"从客观规律的制约下解放出来","C":"从旧的社会关系的束缚下解放出来","D":"从旧的传统观念的禁锢下解放出来"},"id":117,"answer":"ACD","image":""},{"sourceNumber":6,"chapter":"综合多选","type":"多选题","question":"对立统一规律是唯物辩证法的实质和核心，是因为它（ ）","options":{"A":"揭示了事物发展的方向和道路","B":"揭示了事物发展的源泉和动力","C":"揭示了事物发展的状态和形式","D":"揭示了事物普遍联系的本质内容","E":"是贯穿于辩证法其他规律和范畴的主线"},"id":118,"answer":"BDE","image":""},{"sourceNumber":7,"chapter":"综合多选","type":"多选题","question":"在下列命题中，属于客观唯心主义哲学观点的是（ ）","options":{"A":"世界统一于存在","B":"世界是观念的集合","C":"世界是绝对观念的异化","D":"世界是上帝意志的创造物","E":"物是感觉的复合"},"id":119,"answer":"CD","image":""},{"sourceNumber":8,"chapter":"综合多选","type":"多选题","question":"在下列命题中，属于主观唯心主义观点的是（ ）","options":{"A":"我思故我在","B":"存在就是被感知","C":"物是绝对观念的外化","D":"万物皆备于我","E":"人的理性为自然立法"},"id":120,"answer":"ABDE","image":""},{"sourceNumber":9,"chapter":"综合多选","type":"多选题","question":"下列格言或成语中，体现量变质变规律的有（ ）","options":{"A":"九层之台，起于垒土","B":"有无相生，前后相随","C":"月晕而风，础润而雨","D":"千里之堤，溃于蚁穴","E":"为山九仞，功亏一篑"},"id":121,"answer":"ADE","image":""},{"sourceNumber":10,"chapter":"综合多选","type":"多选题","question":"在下列命题中，包含辩证法思想的有（ ）","options":{"A":"“易穷则变，变则通，通则久”","B":"“祸兮福之所倚，福兮祸之所伏”","C":"“道之大原出于天，天不变，道亦不变”","D":"“天下之势，循则极，极则反”","E":"“荣枯代谢而弥见其新”"},"id":122,"answer":"ABDE","image":""},{"sourceNumber":11,"chapter":"综合多选","type":"多选题","question":"19世纪英国历史学家托马斯 ·卡莱尔宣称，世界史“实际上是一部在地球上建立功业的伟大人物的历史”。这是一种典型的英雄史观的看法。与之相对的唯物史观则认为（ ）","options":{"A":"历史人物的作用性质取决于他们的思想、行为是否符合社会发展规律，是否符合人民群众的意愿","B":"即使是杰出人物也无法对社会进程产生影响","C":"任何历史人物的出现都体现了必然性与偶然性的统一","D":"人人创造历史"},"id":123,"answer":"AC","image":""},{"sourceNumber":12,"chapter":"综合多选","type":"多选题","question":"19 世纪英国作家惠兹里特说：“一个除了书本以外一无所知的纯粹学者，必然对书本也是无知的。”与这句话在内涵上相一致的名言还有（ ）","options":{"A":"纸上得来终觉浅，绝知此事要躬行","B":"尽信书，则不如无书","C":"感觉到了的东西我们不能立刻理解它，只有理解了才能更深刻地感觉它","D":"饱经风霜的老人与缺乏阅历的少年对同一句格言的理解是不同的"},"id":124,"answer":"ABD","image":""},{"sourceNumber":13,"chapter":"综合多选","type":"多选题","question":"马克思主义认识论认为，主体与客体关系的内涵包括（ ）","options":{"A":"实践关系","B":"认识关系","C":"价值关系","D":"审美关系","E":"主从关系"},"id":125,"answer":"ABCD","image":""},{"sourceNumber":14,"chapter":"综合多选","type":"多选题","question":"对于同一棵大树，在木匠的眼中是木材，画家看到的是色彩和色调，植物学家看到的是它的形态特征，这是由于（ ）","options":{"A":"人的感觉受理性指导","B":"人的认识具有能动性","C":"理性认识是感性认识的基础","D":"已在的认识影响感觉活动","E":"意识建构认识对象"},"id":126,"answer":"ABD","image":""},{"sourceNumber":15,"chapter":"综合多选","type":"多选题","question":"1971 年，迪斯尼乐园的路径设计获得了“世界最佳设计”奖，设计师格罗培斯却说，“其实那不是我的设计”。原因是在迪斯尼乐园主体工程完工后，格罗培斯暂停修筑乐园里的道路，并在空地上撒上草种。五个月后，乐园里绿草茵茵，草地上被游客踏出了不少宽窄不一的小路。格罗培斯根据这些行人踏出来的小路铺设了人行道，成了“优雅自然、简捷便利、个性突出”的优秀设计。格罗培斯的设计智慧对我们认识和实践活动的启示是（ ）","options":{"A":"要从生活实践中获取灵感","B":"要尊重群众的实际需求","C":"不要对自然事物做任何改变","D":"要对事物本来面目做直观反映"},"id":127,"answer":"AB","image":""},{"sourceNumber":16,"chapter":"综合多选","type":"多选题","question":"2011年4月，耶鲁大学出版了《马克思为什么是对的》一书，书中列举了当前西方社会10个典型的歪曲马克思主义的观点。其中一种观点认为：马克思主义将世间万物都归结于经济因素，艺术、宗教、政治、法律、道德等都被简单地视为经济的反映，对人类历史错综复杂的本质视而不见，而试图建立一种非黑即白的单一历史观，上述观点是对马克思主义关于经济基础和上层建筑辩证关系思想的严重歪曲，其表现为（ ）","options":{"A":"把社会历史发展多重因素的综合作用歪曲为单一因素决定论","B":"把上层建筑与经济基础的相互作用歪曲为机械的单向作用","C":"把经济作为社会的“基础”所具有的归根到底的决定作用歪曲为唯一决定作用","D":"把意识形态对社会历史始终具有的积极能动作用歪曲为消极被动作用"},"id":128,"answer":"ABC","image":""},{"sourceNumber":17,"chapter":"综合多选","type":"多选题","question":"唯物史观第一次科学地解决了历史创造者的问题，认为人民群众是历史的创造者。人民群众（ ）","options":{"A":"从量上说是指社会人口中的绝大多数","B":"从质上说是对社会历史发展起推动作用的人们","C":"在任何历史时期都不包括剥削阶级","D":"最稳定的主体部分始终是从事物质资料生产的劳动群众及其知识分子"},"id":129,"answer":"ABD","image":""},{"sourceNumber":18,"chapter":"综合多选","type":"多选题","question":"基因编辑是应对遗传性疾病的一种潜在治疗办法，但其技术运用极具争议，这不仅是因为基因的变化会传给后代并最终有可能影响整个基因库，而且更重要的是基因编辑会产生长远而深刻的社会影响，可能衍生出一系列棘手的伦理、法律和安全难题，正因如此，许多国家对人类基因编辑技术制定了相应的伦理、法律规范。人类严格控制基因编辑行为的原因在于（ ）","options":{"A":"人的实践活动要遵循真理尺度与价值尺度的统一","B":"基因编辑技术可能突破人类的伦理道德底线","C":"科学技术有时表现为异己的、敌对的力量","D":"人的实践活动是合规律性与合目的性的统一"},"id":130,"answer":"ABCD","image":""},{"sourceNumber":19,"chapter":"综合多选","type":"多选题","question":"一方水土孕育一方文化。很早以前，人们就在平原、高原、山地、河谷，海域等广阔的地理空间发展出农耕、渔猎、游牧等不同经济形态，进而形成具有明显地域差别的文化。高铁、互联网等虽然极大消除了不同地域空间之间的界限，加速地域文化的同质性转化，但地域文化并没有消失，还在持续对当代社会发展产生重要影响。“一方水土孕育一方文化”表明（ ）","options":{"A":"社会经济状况决定文化发展形态","B":"自然地理空间影响文化的外在特征","C":"文化是人类社会发展的决定力量","D":"不同形态文化的发展具有相对独立性"},"id":131,"answer":"ABD","image":""},{"sourceNumber":20,"chapter":"综合多选","type":"多选题","question":"19世纪英国历史学家托马斯 ·卡莱尔宣称，世界史“实际上是一部在地球上建立功业的伟大人物的历史”。这是一种典型的英雄史观的看法。与之相对的唯物史观则认为（ ）","options":{"A":"历史人物的作用性质取决于他们的思想、行为是否符合社会发展规律，是否符合人民群众的意愿","B":"即使是杰出人物也无法对社会进程产生影响","C":"任何历史人物的出现都体现了必然性与偶然性的统一","D":"人人创造历史"},"id":132,"answer":"AC","image":""},{"sourceNumber":21,"chapter":"综合多选","type":"多选题","question":"马克思关于资本有机构成学说论证了（ ）","options":{"A":"相对过剩人口的形成","B":"技术进步条件下生产资料生产的优先增长","C":"平均利润率的形成","D":"利润率的下降趋势","E":"商业利润的来源"},"id":133,"answer":"ABD","image":""},{"sourceNumber":22,"chapter":"综合多选","type":"多选题","question":"马克思把资本划分为不变资本和可变资本，其意义在于（ ）","options":{"A":"揭示了剩余价值的真正来源","B":"为计算剩余价值率提供了科学依据","C":"为计算资本周转速度提供了依据","D":"为资本有机构成理论奠定了基础","E":"为平均利润、生产价格理论奠定了基础"},"id":134,"answer":"ABDE","image":""},{"sourceNumber":23,"chapter":"综合多选","type":"多选题","question":"有一则寓言讲到：狐狸把鱼汤盛在平底的盘子里，请仙鹤来和它一起“平等”的喝鱼汤，结果仙鹤一点也没喝到，全被狐狸喝去了。这个寓言给人们的启示是，尽管资产阶级宣布“法律面前人人平等”，但是（ ）","options":{"A":"法律名义上的平等掩盖着事实上的不平等","B":"这种形式上的平等即是资本主义的本质","C":"它的实质是将劳资之间经济利益的不平等合法化","D":"这种平等的权利是建立在财产不平等基础之上的权利"},"id":135,"answer":"ACD","image":""},{"sourceNumber":24,"chapter":"综合多选","type":"多选题","question":"人们往往将汉语中的“价”、“值”二字与金银财宝等联系起来，而这两字的偏旁却都是“人”，示意价值在“人”。马克思劳动价值论透过商品交换的物与物的关系，揭示了商品价值的科学内涵，其主要观点有（ ）","options":{"A":"劳动是社会财富的唯一源泉","B":"具体劳动是商品价值的实体","C":"价值是凝结在商品中的一般人类劳动","D":"价值在本质上体现了生产者之间的社会关系"},"id":136,"answer":"CD","image":""},{"sourceNumber":25,"chapter":"综合多选","type":"多选题","question":"伴随着生产力发展，科技进步及阶级关系调整，当代资本主义社会的劳资关系和分配关系发生了很大变化。其中资本家及其代理人为缓和劳资关系所采取的激励制度有（ ）","options":{"A":"职工参与决策制度","B":"职工终身雇佣制度","C":"职工选举管理制度","D":"职工持股制度"},"id":137,"answer":"ABD","image":""},{"sourceNumber":26,"chapter":"综合多选","type":"多选题","question":"马克思、恩格斯在《共产党宣言》中指出：“资产阶级在它的不到一百年的阶级统治中所创造的生产力，比过去一切世代创造的全部生产力还要多，还要大。自然力的征服，机器的采用，化学在工业和农业中的应用，轮船的行驶，铁路的通行，电报的使用，整个整个大陆的开垦，河川的通航，仿佛用法术从地下呼唤出来的大量人口——过去哪一个世纪料想到在社会劳动里蕴藏有这样的生产力呢？”资本主义社会生产力迅速发展的主要原因是（ ）","options":{"A":"资本追逐剩余价值的内在动力","B":"市场激烈竞争的外在压力","C":"无产阶级反对资产阶级的斗争","D":"资本主义国家对市场的全面控制"},"id":138,"answer":"AB","image":""},{"sourceNumber":27,"chapter":"综合多选","type":"多选题","question":"1516 年，英国人托马斯·莫尔发表了《乌托邦》一书，标志着空想社会主义的诞生，1848 年，马克思恩格斯发表了《共产党宣言》，标志着科学社会主义的产生，社会主义实现了从空想到科学的历史性飞跃。科学社会主义超越空想社会主义之处在于（ ）","options":{"A":"对资本主义进行了无情的批判","B":"对未来社会进行了细致的描绘","C":"揭示了资本主义必然灭亡的经济根源","D":"找到了实现理想社会的现实道路"},"id":139,"answer":"CD","image":""}].map(q => ({...q, options:{...q.options}}));
+}
+
+// ===== STATE =====
+let questions = [];
+let examHistory = [];
+let wrongBook = {};
+let editingId = null;
+let tempImage = '';
+
+// Exam state
+let examQuestions = [];
+let examAnswers = {};
+let examCurrentIdx = 0;
+let examTimerInterval = null;
+let examStartTime = 0;
+let examSubmitted = false;
+let examRevealed = {};
+
+// ===== INIT =====
+const DATA_VERSION = 20260627;
+const STORAGE = {
+  version: 'marx_version',
+  questions: 'marx_questions',
+  history: 'marx_history',
+  wrongBook: 'marx_wrong_book'
+};
+
+function init(){
+  const savedVer = localStorage.getItem(STORAGE.version);
+  const saved = localStorage.getItem(STORAGE.questions);
+  if(saved && savedVer == DATA_VERSION){
+    questions = JSON.parse(saved);
+  } else {
+    questions = getDefaultQuestions();
+    saveQuestions();
+    localStorage.setItem(STORAGE.version, DATA_VERSION);
+  }
+  const hist = localStorage.getItem(STORAGE.history);
+  if(hist) examHistory = JSON.parse(hist);
+  const wrong = localStorage.getItem(STORAGE.wrongBook);
+  if(wrong) wrongBook = JSON.parse(wrong);
+
+  populateChapterSelects();
+
+  renderBank();
+  renderExamStart();
+  renderWrongBook();
+  renderHistory();
+
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      switchTab(btn.dataset.tab);
+    });
+  });
+
+  // Filters
+  document.getElementById('filter-chapter').addEventListener('change', renderBank);
+  document.getElementById('filter-type').addEventListener('change', renderBank);
+  document.getElementById('filter-search').addEventListener('input', renderBank);
+  ['wrong-chapter','wrong-type','wrong-status','wrong-sort','wrong-search'].forEach(id => {
+    document.getElementById(id).addEventListener('input', renderWrongBook);
+  });
+  document.getElementById('wrong-import').addEventListener('change', importWrongBook);
+}
+
+function populateChapterSelects(){
+  const selectors = [
+    {id:'filter-chapter', label:'全部章节', blank:true},
+    {id:'wrong-chapter', label:'全部章节', blank:true},
+    {id:'f-chapter', label:'', blank:false}
+  ];
+  selectors.forEach(cfg => {
+    const el = document.getElementById(cfg.id);
+    const current = el.value;
+    el.innerHTML = (cfg.blank ? `<option value="">${cfg.label}</option>` : '') +
+      CHAPTERS.map(ch => `<option value="${escHtml(ch)}">${escHtml(ch)}</option>`).join('');
+    if(current && CHAPTERS.includes(current)) el.value = current;
+  });
+}
+
+function saveQuestions(){
+  localStorage.setItem(STORAGE.questions, JSON.stringify(questions));
+}
+function saveHistory(){
+  localStorage.setItem(STORAGE.history, JSON.stringify(examHistory));
+}
+function saveWrongBook(){
+  localStorage.setItem(STORAGE.wrongBook, JSON.stringify(wrongBook));
+}
+
+// ===== TOAST =====
+function showToast(msg, type='success'){
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2000);
+}
+
+// ===== BANK =====
+function renderBank(){
+  const ch = document.getElementById('filter-chapter').value;
+  const tp = document.getElementById('filter-type').value;
+  const kw = document.getElementById('filter-search').value.trim().toLowerCase();
+
+  const filtered = questions.filter(q => {
+    if(ch && q.chapter !== ch) return false;
+    if(tp && q.type !== tp) return false;
+    if(kw){
+      const haystack = [q.question, q.answer, ...Object.values(q.options || {})].join(' ').toLowerCase();
+      if(!haystack.includes(kw)) return false;
+    }
+    return true;
+  });
+
+  // Stats
+  const total = questions.length;
+  const singles = questions.filter(q=>q.type==='单选题').length;
+  const multis = questions.filter(q=>q.type==='多选题').length;
+  const wrongs = Object.values(wrongBook).filter(w=>!w.mastered).length;
+
+  document.getElementById('bank-stats').innerHTML = `
+    <div class="stat-card"><div class="num">${total}</div><div class="label">总题数</div></div>
+    <div class="stat-card single"><div class="num">${singles}</div><div class="label">单选题</div></div>
+    <div class="stat-card multi"><div class="num">${multis}</div><div class="label">多选题</div></div>
+    <div class="stat-card wrong"><div class="num">${wrongs}</div><div class="label">未掌握错题</div></div>
+  `;
+
+  const list = document.getElementById('bank-list');
+  if(filtered.length === 0){
+    list.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><p>暂无题目</p></div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(q => {
+    const typeClass = q.type === '单选题' ? 'single' : 'multi';
+    const tagType = q.type === '单选题' ? 'tag-single' : 'tag-multi';
+    let optsHtml = '';
+    if(q.options){
+      if(typeof q.options === 'object'){
+        optsHtml = Object.entries(q.options).map(([k,v]) => `<div>${k}. ${escHtml(v)}</div>`).join('');
+      }
+    }
+    const ansText = q.answer;
+    return `<div class="q-item ${typeClass}">
+      <div class="q-item-header">
+        <div class="q-tags">
+          <span class="tag tag-chapter">${escHtml(q.chapter)}</span>
+          <span class="tag ${tagType}">${escHtml(q.type)}</span>
+        </div>
+        <div class="q-actions">
+          <button class="btn btn-muted btn-sm" onclick="addQuestionToWrong(${q.id})">加入错题</button>
+          <button class="btn btn-outline btn-sm" onclick="openEditModal(${q.id})">编辑</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteQuestion(${q.id})">删除</button>
+        </div>
+      </div>
+      <div class="q-text">${escHtml(q.question)}</div>
+      ${optsHtml ? `<div class="q-options">${optsHtml}</div>` : ''}
+      <div class="q-answer">正确答案：${escHtml(ansText)}</div>
+      ${q.image ? `<img class="q-image" src="${q.image}" alt="题目图片">` : ''}
+    </div>`;
+  }).join('');
+}
+
+function escHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s == null ? '' : String(s);
+  return d.innerHTML;
+}
+
+function deleteQuestion(id){
+  if(!confirm('确定删除此题目？')) return;
+  questions = questions.filter(q => q.id !== id);
+  delete wrongBook[String(id)];
+  saveQuestions();
+  saveWrongBook();
+  populateChapterSelects();
+  renderBank();
+  renderWrongBook();
+  showToast('题目已删除');
+}
+
+// ===== MODAL =====
+function openAddModal(){
+  editingId = null;
+  document.getElementById('modal-title').textContent = '添加题目';
+  populateChapterSelects();
+  document.getElementById('f-chapter').value = CHAPTERS[0];
+  document.getElementById('f-type').value = '单选题';
+  document.getElementById('f-question').value = '';
+  tempImage = '';
+  document.getElementById('f-image-preview').innerHTML = '';
+  document.getElementById('f-image').value = '';
+  onTypeChange();
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function openEditModal(id){
+  const q = questions.find(q => q.id === id);
+  if(!q) return;
+  editingId = id;
+  document.getElementById('modal-title').textContent = '编辑题目';
+  populateChapterSelects();
+  document.getElementById('f-chapter').value = q.chapter;
+  document.getElementById('f-type').value = q.type;
+  document.getElementById('f-question').value = q.question;
+  tempImage = q.image || '';
+  document.getElementById('f-image').value = '';
+  if(tempImage){
+    document.getElementById('f-image-preview').innerHTML = `<img src="${tempImage}" style="max-width:120px;max-height:80px;border-radius:4px">`;
+  } else {
+    document.getElementById('f-image-preview').innerHTML = '';
+  }
+  onTypeChange(q.options, q.answer);
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+
+let optionLetters = ['A','B','C','D'];
+
+function onTypeChange(existingOpts, existingAns){
+  const type = document.getElementById('f-type').value;
+  const optGroup = document.getElementById('f-options-group');
+  const ansArea = document.getElementById('f-answer-area');
+
+  if(type === '判断题'){
+    optGroup.style.display = 'none';
+    ansArea.innerHTML = `<div class="answer-radios">
+      <label><input type="radio" name="f-answer" value="对" ${existingAns==='对'||!existingAns?'checked':''}> 对</label>
+      <label><input type="radio" name="f-answer" value="错" ${existingAns==='错'?'checked':''}> 错</label>
+    </div>`;
+  } else {
+    optGroup.style.display = 'block';
+    optionLetters = existingOpts ? Object.keys(existingOpts).sort() : ['A','B','C','D'];
+    if(optionLetters.length < 2) optionLetters = ['A','B','C','D'];
+    renderOptionInputs(existingOpts || {}, existingAns);
+  }
+}
+
+function renderOptionInputs(vals, existingAns){
+  const inputs = document.getElementById('f-options-inputs');
+  const type = document.getElementById('f-type').value;
+  const ansArea = document.getElementById('f-answer-area');
+
+  inputs.innerHTML = optionLetters.map((l, idx) => `
+    <div class="option-input" data-letter="${l}">
+      <span>${l}</span>
+      <input type="text" id="f-opt-${l}" value="${escHtml(vals[l]||'')}" placeholder="选项${l}">
+      ${optionLetters.length > 2 ? `<button type="button" class="opt-del-btn" onclick="removeOption('${l}')">删除</button>` : ''}
+    </div>
+  `).join('') + `<button type="button" class="add-opt-btn" onclick="addOption()">+ 添加选项</button>`;
+
+  if(type === '单选题'){
+    ansArea.innerHTML = `<div class="answer-radios">
+      ${optionLetters.map(l => `<label><input type="radio" name="f-answer" value="${l}" ${existingAns===l?'checked':''}> ${l}</label>`).join('')}
+    </div>`;
+  } else {
+    ansArea.innerHTML = `<div class="answer-checkboxes">
+      ${optionLetters.map(l => `<label><input type="checkbox" name="f-answer" value="${l}" ${existingAns && existingAns.includes(l)?'checked':''}> ${l}</label>`).join('')}
+      <span style="font-size:.8rem;color:var(--text-light)">（可多选）</span>
+    </div>`;
+  }
+}
+
+function addOption(){
+  const nextCode = optionLetters.length > 0 ? optionLetters[optionLetters.length-1].charCodeAt(0) + 1 : 65;
+  const nextLetter = String.fromCharCode(nextCode);
+  optionLetters.push(nextLetter);
+  const vals = {};
+  optionLetters.forEach(l => {
+    const el = document.getElementById('f-opt-'+l);
+    vals[l] = el ? el.value : '';
+  });
+  const existingAns = document.querySelector('input[name="f-answer"]:checked')?.value || '';
+  const checkedBoxes = [...document.querySelectorAll('input[name="f-answer"]:checked')].map(c=>c.value);
+  const ans = document.getElementById('f-type').value === '单选题' ? existingAns : checkedBoxes.join('');
+  renderOptionInputs(vals, ans);
+}
+
+function removeOption(letter){
+  if(optionLetters.length <= 2) return;
+  optionLetters = optionLetters.filter(l => l !== letter);
+  const vals = {};
+  optionLetters.forEach(l => {
+    const el = document.getElementById('f-opt-'+l);
+    vals[l] = el ? el.value : '';
+  });
+  const existingAns = document.querySelector('input[name="f-answer"]:checked')?.value || '';
+  const checkedBoxes = [...document.querySelectorAll('input[name="f-answer"]:checked')].map(c=>c.value);
+  let ans = document.getElementById('f-type').value === '单选题' ? existingAns : checkedBoxes.join('');
+  // Remove deleted letter from answer
+  if(ans.includes(letter)){
+    ans = ans.split('').filter(c => c !== letter).join('');
+  }
+  renderOptionInputs(vals, ans);
+}
+
+function onImageSelect(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    tempImage = ev.target.result;
+    document.getElementById('f-image-preview').innerHTML = `<img src="${tempImage}" style="max-width:120px;max-height:80px;border-radius:4px">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveQuestion(){
+  const chapter = document.getElementById('f-chapter').value;
+  const type = document.getElementById('f-type').value;
+  const question = document.getElementById('f-question').value.trim();
+  if(!question){showToast('请输入题目内容','error');return;}
+
+  let options = null;
+  let answer = '';
+
+  if(type === '判断题'){
+    answer = document.querySelector('input[name="f-answer"]:checked')?.value || '对';
+  } else {
+    options = {};
+    optionLetters.forEach(l => {
+      const v = document.getElementById('f-opt-'+l)?.value.trim();
+      if(v !== undefined) options[l] = v;
+    });
+    if(type === '单选题'){
+      answer = document.querySelector('input[name="f-answer"]:checked')?.value || '';
+    } else {
+      const checked = [...document.querySelectorAll('input[name="f-answer"]:checked')].map(c=>c.value);
+      answer = checked.sort().join('');
+    }
+    if(!answer){showToast('请选择正确答案','error');return;}
+  }
+
+  if(editingId){
+    const q = questions.find(q=>q.id===editingId);
+    if(q){
+      q.chapter = chapter;
+      q.type = type;
+      q.question = question;
+      q.options = options;
+      q.answer = answer;
+      q.image = tempImage;
+      syncWrongSnapshot(q);
+    }
+    showToast('题目已更新');
+  } else {
+    const maxId = questions.reduce((m,q)=>Math.max(m,q.id),0);
+    questions.push({id:maxId+1,chapter,type,question,options,answer,image:tempImage});
+    showToast('题目已添加');
+  }
+  saveQuestions();
+  populateChapterSelects();
+  renderBank();
+  renderWrongBook();
+  closeModal();
+}
+
+// ===== EXAM =====
+function renderExamStart(){
+  const el = document.getElementById('view-exam');
+  const singleCount = questions.filter(q=>q.type==='单选题').length;
+  const multiCount = questions.filter(q=>q.type==='多选题').length;
+
+  const canStart = singleCount >= 15 && multiCount >= 5;
+
+  el.innerHTML = `
+    <div class="exam-start">
+      <h2>模拟考试</h2>
+      <div class="exam-rules">
+        <p style="font-weight:600;margin-bottom:10px">考试规则</p>
+        <ul style="padding-left:20px">
+          <li>单选题：<strong>15道</strong>（题库现有 ${singleCount} 道）</li>
+          <li>多选题：<strong>5道</strong>（题库现有 ${multiCount} 道）</li>
+          <li>共 <strong>20道</strong>，随机从题库抽取</li>
+          <li>每题分值相等，满分 <strong>100分</strong></li>
+          <li>每题作答后立即显示正确答案，点击“下一题”继续</li>
+          <li>答错自动进入错题本，连续答对两次可标记为已掌握</li>
+          <li>计时器仅供参考，不限制答题时间</li>
+        </ul>
+      </div>
+      <button class="btn btn-primary btn-lg" onclick="startExam()" ${canStart?'':'disabled'} style="margin-top:16px">
+        ${canStart ? '开始答题' : '题库题目不足，无法开始'}
+      </button>
+      ${!canStart ? '<p style="color:var(--error);margin-top:10px;font-size:.85rem">需要至少：单选题15道、多选题5道</p>' : ''}
+    </div>
+  `;
+}
+
+function startExam(){
+  const singles = shuffle(questions.filter(q=>q.type==='单选题')).slice(0,15);
+  const multis = shuffle(questions.filter(q=>q.type==='多选题')).slice(0,5);
+  if(singles.length < 15 || multis.length < 5){
+    showToast('题库题量不足，无法开始','error');
+    return;
+  }
+  beginExamWithQuestions(shuffle([...singles, ...multis]));
+}
+
+function beginExamWithQuestions(list){
+  examQuestions = list.map(q => ({...q, options: q.options ? {...q.options} : null}));
+  examAnswers = {};
+  examCurrentIdx = 0;
+  examSubmitted = false;
+  examRevealed = {};
+  examStartTime = Date.now();
+
+  if(examTimerInterval) clearInterval(examTimerInterval);
+  examTimerInterval = setInterval(updateTimer, 1000);
+
+  switchTab('exam');
+  renderExamQuestion();
+}
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function updateTimer(){
+  const elapsed = Math.floor((Date.now() - examStartTime)/1000);
+  const m = String(Math.floor(elapsed/60)).padStart(2,'0');
+  const s = String(elapsed%60).padStart(2,'0');
+  const el = document.getElementById('exam-timer');
+  if(el) el.textContent = `⏱ ${m}:${s}`;
+}
+
+function renderExamQuestion(){
+  const q = examQuestions[examCurrentIdx];
+  const total = examQuestions.length;
+  const progress = ((examCurrentIdx+1)/total*100).toFixed(1);
+  const revealed = !!examRevealed[q.id];
+  const currentAns = examAnswers[q.id] || (q.type === '多选题' ? [] : '');
+  const hasAnswer = Array.isArray(currentAns) ? currentAns.length > 0 : !!currentAns;
+  const isCorrect = revealed && isExamAnswerCorrect(q, currentAns);
+
+  let typeLabel = '';
+  let typeBg = '';
+  if(q.type==='判断题'){typeLabel='判断题';typeBg='background:var(--warning-light);color:#d48806';}
+  else if(q.type==='单选题'){typeLabel='单选题';typeBg='background:var(--primary-light);color:var(--primary)';}
+  else{typeLabel='多选题';typeBg='background:var(--success-light);color:#389e0d';}
+
+  let optionsHtml = '';
+  if(q.type === '判断题'){
+    const judgeOptions = [
+      {value:'对', letter:'✓'},
+      {value:'错', letter:'✗'}
+    ];
+    optionsHtml = `
+      <div class="exam-options">
+        ${judgeOptions.map(item => {
+          const selected = currentAns === item.value;
+          let stateClass = selected ? 'selected' : '';
+          if(revealed){
+            if(q.answer === item.value) stateClass = 'correct';
+            else if(selected) stateClass = 'wrong';
+            else stateClass = '';
+          }
+          return `<div class="exam-option ${stateClass}" ${revealed ? 'style="cursor:default"' : `onclick="selectAnswer(${q.id},'${item.value}')"`}>
+            <span class="opt-letter">${item.letter}</span><span>${item.value}</span>
+          </div>`;
+        }).join('')}
+      </div>`;
+  } else {
+    const letters = q.options ? Object.keys(q.options) : [];
+    const isMulti = q.type === '多选题';
+
+    optionsHtml = (isMulti && !revealed ? '<div class="multi-hint">💡 可多选，选完后点击“确认答案”</div>' : '') +
+      '<div class="exam-options">' +
+      letters.map(l => {
+        let sel = false;
+        if(isMulti){
+          sel = Array.isArray(currentAns) && currentAns.includes(l);
+        } else {
+          sel = currentAns === l;
+        }
+        let stateClass = sel ? 'selected' : '';
+        if(revealed){
+          if(q.answer.includes(l)) stateClass = 'correct';
+          else if(sel) stateClass = 'wrong';
+          else stateClass = '';
+        }
+        return `<div class="exam-option ${stateClass}" ${revealed ? 'style="cursor:default"' : `onclick="selectAnswer(${q.id},'${l}')"`}>
+          <span class="opt-letter">${l}</span><span>${escHtml(q.options[l])}</span>
+        </div>`;
+      }).join('') +
+      '</div>';
+  }
+
+  const feedbackHtml = revealed ? `
+    <div class="answer-feedback ${isCorrect?'correct':'wrong'}">
+      <div class="answer-feedback-title">${isCorrect?'✅ 回答正确':'❌ 回答错误'}</div>
+      <div class="answer-feedback-detail">
+        你的答案：<strong>${escHtml(formatExamAnswer(q, currentAns))}</strong><br>
+        正确答案：<strong>${escHtml(q.answer)}</strong>
+      </div>
+    </div>
+  ` : '';
+
+  let actionHtml = '';
+  if(revealed){
+    actionHtml = examCurrentIdx === total-1
+      ? '<button class="btn btn-success" onclick="submitExam()">📊 查看成绩</button>'
+      : '<button class="btn btn-primary" onclick="nextQuestion()">下一题 ➡</button>';
+  } else if(q.type === '多选题'){
+    actionHtml = `<button class="btn btn-primary" onclick="confirmCurrentAnswer()" ${hasAnswer?'':'disabled'}>确认答案</button>`;
+  } else {
+    actionHtml = '<div class="answer-tip">选择一个答案后，将立即显示正确答案</div>';
+  }
+
+  document.getElementById('view-exam').innerHTML = `
+    <div class="exam-top">
+      <span class="exam-qnum">第 ${examCurrentIdx+1} / ${total} 题</span>
+      <span class="exam-timer" id="exam-timer">⏱ 00:00</span>
+    </div>
+    <div class="exam-progress"><div class="exam-progress-bar" style="width:${progress}%"></div></div>
+    <div class="exam-card">
+      <span class="exam-q-type" style="${typeBg}">${typeLabel}</span>
+      <div class="exam-q-text">${escHtml(q.question)}</div>
+      ${q.image ? `<img class="exam-q-image" src="${q.image}" alt="题目图片">` : ''}
+      ${optionsHtml}
+      ${feedbackHtml}
+    </div>
+    <div class="exam-nav">
+      ${actionHtml}
+    </div>
+  `;
+  updateTimer();
+}
+
+function selectAnswer(qid, val){
+  const q = examQuestions.find(x=>x.id===qid);
+  if(!q || examRevealed[qid]) return;
+
+  if(q.type === '多选题'){
+    let cur = examAnswers[qid] || [];
+    if(!Array.isArray(cur)) cur = [];
+    if(cur.includes(val)){
+      cur = cur.filter(v=>v!==val);
+    } else {
+      cur.push(val);
+    }
+    cur.sort();
+    examAnswers[qid] = cur;
+  } else {
+    examAnswers[qid] = val;
+    examRevealed[qid] = true;
+  }
+  renderExamQuestion();
+}
+
+function confirmCurrentAnswer(){
+  const q = examQuestions[examCurrentIdx];
+  const answer = examAnswers[q.id];
+  const hasAnswer = Array.isArray(answer) ? answer.length > 0 : !!answer;
+  if(!hasAnswer){
+    showToast('请先选择答案','error');
+    return;
+  }
+  examRevealed[q.id] = true;
+  renderExamQuestion();
+}
+
+function nextQuestion(){
+  const q = examQuestions[examCurrentIdx];
+  if(!examRevealed[q.id]){
+    showToast('请先完成本题','error');
+    return;
+  }
+  if(examCurrentIdx < examQuestions.length-1){
+    examCurrentIdx++;
+    renderExamQuestion();
+  }
+}
+
+function formatExamAnswer(q, answer){
+  if(q.type === '多选题'){
+    return Array.isArray(answer) && answer.length ? answer.join('') : '未作答';
+  }
+  return answer || '未作答';
+}
+
+function isExamAnswerCorrect(q, answer){
+  if(q.type === '多选题'){
+    const userAnswer = Array.isArray(answer) ? [...answer].sort().join('') : '';
+    return userAnswer === q.answer;
+  }
+  return answer === q.answer;
+}
+
+function submitExam(){
+  const unanswered = examQuestions.filter(q=>!examAnswers[q.id] || (Array.isArray(examAnswers[q.id]) && examAnswers[q.id].length===0)).length;
+  if(unanswered > 0){
+    if(!confirm(`还有 ${unanswered} 题未作答，确定交卷吗？`)) return;
+  }
+
+  if(examTimerInterval) clearInterval(examTimerInterval);
+  examSubmitted = true;
+
+  const timeSpent = Math.floor((Date.now() - examStartTime)/1000);
+  let correct = 0;
+  const results = examQuestions.map(q => {
+    let userAns = examAnswers[q.id];
+    const isCorrect = isExamAnswerCorrect(q, userAns);
+    if(isCorrect) correct++;
+    if(isCorrect) {
+      markWrongQuestionCorrect(q);
+    } else {
+      recordWrongQuestion(q, userAns);
+    }
+    return {...q, userAnswer: userAns, isCorrect};
+  });
+
+  const score = Math.round((correct/examQuestions.length)*100);
+
+  // Save history
+  const record = {
+    id: Date.now(),
+    date: new Date().toLocaleString('zh-CN'),
+    score,
+    correct,
+    total: examQuestions.length,
+    timeSpent,
+    results
+  };
+  examHistory.unshift(record);
+  saveHistory();
+  saveWrongBook();
+  renderBank();
+  renderWrongBook();
+
+  renderExamResult(record);
+}
+
+function renderExamResult(record){
+  const pass = record.score >= 60;
+  const m = String(Math.floor(record.timeSpent/60)).padStart(2,'0');
+  const s = String(record.timeSpent%60).padStart(2,'0');
+
+  let reviewHtml = record.results.map((q,i) => {
+    let typeLabel = q.type;
+    let userAnsText = '';
+    if(q.type === '判断题'){
+      userAnsText = q.userAnswer || '未作答';
+    } else if(q.type === '多选题'){
+      userAnsText = Array.isArray(q.userAnswer) ? q.userAnswer.join('') : '未作答';
+    } else {
+      userAnsText = q.userAnswer || '未作答';
+    }
+
+    const correctAnsText = q.type === '判断题' ? q.answer : q.answer;
+
+    let optsDetail = '';
+    if(q.options){
+      optsDetail = Object.entries(q.options).map(([k,v]) => {
+        let cls = '';
+        if(q.type === '多选题'){
+          const correctArr = q.answer.split('');
+          const userArr = Array.isArray(q.userAnswer) ? q.userAnswer : [];
+          if(correctArr.includes(k)) cls = 'correct';
+          else if(userArr.includes(k)) cls = 'wrong';
+        } else {
+          if(k === q.answer) cls = 'correct';
+          else if(k === q.userAnswer && !q.isCorrect) cls = 'wrong';
+        }
+        return `<div class="exam-option ${cls}" style="cursor:default;padding:8px 12px;margin-bottom:4px">
+          <span class="opt-letter" style="width:24px;height:24px;font-size:.75rem">${k}</span>
+          <span style="font-size:.85rem">${escHtml(v)}</span>
+        </div>`;
+      }).join('');
+    } else {
+      // 判断题
+      optsDetail = `
+        <div class="exam-option ${q.answer==='对'?'correct':''} ${q.userAnswer==='对'&&!q.isCorrect?'wrong':''}" style="cursor:default;padding:8px 12px;margin-bottom:4px">
+          <span class="opt-letter" style="width:24px;height:24px;font-size:.75rem">✓</span><span>对</span>
+        </div>
+        <div class="exam-option ${q.answer==='错'?'correct':''} ${q.userAnswer==='错'&&!q.isCorrect?'wrong':''}" style="cursor:default;padding:8px 12px;margin-bottom:4px">
+          <span class="opt-letter" style="width:24px;height:24px;font-size:.75rem">✗</span><span>错</span>
+        </div>`;
+    }
+
+    return `<div class="review-item card">
+      <div class="q-header">
+        <span class="icon ${q.isCorrect?'ok':'no'}">${q.isCorrect?'✅':'❌'}</span>
+        <span style="font-weight:500">第${i+1}题</span>
+        <span class="tag ${q.type==='判断题'?'tag-judge':q.type==='单选题'?'tag-single':'tag-multi'}" style="margin-left:4px">${q.type}</span>
+      </div>
+      <div class="q-text" style="margin-bottom:8px">${escHtml(q.question)}</div>
+      ${q.image ? `<img class="q-image" src="${q.image}" alt="题目图片">` : ''}
+      <div style="margin:6px 0">${optsDetail}</div>
+      <div style="font-size:.85rem;margin-top:6px">
+        你的答案：<span style="color:${q.isCorrect?'var(--success)':'var(--error)'};font-weight:500">${escHtml(userAnsText)}</span>
+        ${!q.isCorrect ? ` &nbsp;|&nbsp; 正确答案：<span style="color:var(--success);font-weight:500">${escHtml(correctAnsText)}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('view-exam').innerHTML = `
+    <div class="result-header card">
+      <h2 style="margin-bottom:4px">📊 考试结果</h2>
+      <div class="result-score ${pass?'pass':'fail'}">${record.score}</div>
+      <div style="font-size:1.1rem;color:${pass?'var(--success)':'var(--error)'}">${pass?'🎉 恭喜通过！':'😢 未通过，继续加油！'}</div>
+      <div class="result-detail" style="margin-top:12px">
+        <span>✅ 正确：${record.correct}</span>
+        <span>❌ 错误：${record.total - record.correct}</span>
+        <span>⏱ 用时：${m}:${s}</span>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="renderExamStart()">🔄 再考一次</button>
+        <button class="btn btn-outline" onclick="switchTab('wrongbook')">查看错题本</button>
+        <button class="btn btn-outline" onclick="switchTab('bank')">📚 返回题库</button>
+      </div>
+    </div>
+    <h3 style="margin:16px 0 10px;font-size:1rem">📝 答题详情</h3>
+    ${reviewHtml}
+  `;
+}
+
+// ===== WRONG BOOK =====
+function snapshotQuestion(q){
+  return {
+    id:q.id,
+    chapter:q.chapter,
+    type:q.type,
+    sourceNumber:q.sourceNumber,
+    question:q.question,
+    options:q.options ? {...q.options} : null,
+    answer:q.answer,
+    image:q.image || ''
+  };
+}
+
+function syncWrongSnapshot(q){
+  const entry = wrongBook[String(q.id)];
+  if(entry) Object.assign(entry, snapshotQuestion(q));
+}
+
+function formatUserAnswer(q, answer){
+  if(q.type === '多选题') return Array.isArray(answer) && answer.length ? answer.join('') : '未作答';
+  return answer || '未作答';
+}
+
+function recordWrongQuestion(q, userAnswer){
+  const key = String(q.id);
+  const now = new Date().toISOString();
+  const old = wrongBook[key];
+  wrongBook[key] = {
+    ...snapshotQuestion(q),
+    wrongCount:(old?.wrongCount || 0) + 1,
+    firstWrongAt:old?.firstWrongAt || now,
+    lastWrongAt:now,
+    lastPracticedAt:now,
+    lastUserAnswer:formatUserAnswer(q, userAnswer),
+    note:old?.note || '',
+    mastered:false,
+    correctStreak:0
+  };
+}
+
+function markWrongQuestionCorrect(q){
+  const entry = wrongBook[String(q.id)];
+  if(!entry) return;
+  Object.assign(entry, snapshotQuestion(q));
+  entry.correctStreak = (entry.correctStreak || 0) + 1;
+  entry.lastPracticedAt = new Date().toISOString();
+  if(entry.correctStreak >= 2) entry.mastered = true;
+}
+
+function addQuestionToWrong(id){
+  const q = questions.find(x=>x.id===id);
+  if(!q) return;
+  const key = String(id);
+  if(wrongBook[key]){
+    showToast('这道题已经在错题本里');
+    return;
+  }
+  const now = new Date().toISOString();
+  wrongBook[key] = {
+    ...snapshotQuestion(q),
+    wrongCount:1,
+    firstWrongAt:now,
+    lastWrongAt:now,
+    lastPracticedAt:now,
+    lastUserAnswer:'手动加入',
+    note:'',
+    mastered:false,
+    correctStreak:0
+  };
+  saveWrongBook();
+  renderBank();
+  renderWrongBook();
+  showToast('已加入错题本');
+}
+
+function getWrongEntries(){
+  return Object.values(wrongBook);
+}
+
+function getFilteredWrongEntries(){
+  const ch = document.getElementById('wrong-chapter').value;
+  const tp = document.getElementById('wrong-type').value;
+  const status = document.getElementById('wrong-status').value;
+  const sort = document.getElementById('wrong-sort').value;
+  const kw = document.getElementById('wrong-search').value.trim().toLowerCase();
+  const entries = getWrongEntries().filter(e => {
+    if(ch && e.chapter !== ch) return false;
+    if(tp && e.type !== tp) return false;
+    if(status === 'unmastered' && e.mastered) return false;
+    if(status === 'mastered' && !e.mastered) return false;
+    if(kw){
+      const haystack = [e.question, e.answer, e.note || '', ...Object.values(e.options || {})].join(' ').toLowerCase();
+      if(!haystack.includes(kw)) return false;
+    }
+    return true;
+  });
+  entries.sort((a,b) => {
+    if(sort === 'count') return (b.wrongCount || 0) - (a.wrongCount || 0) || new Date(b.lastWrongAt || 0) - new Date(a.lastWrongAt || 0);
+    if(sort === 'chapter') return CHAPTERS.indexOf(a.chapter) - CHAPTERS.indexOf(b.chapter) || (a.sourceNumber || 0) - (b.sourceNumber || 0);
+    return new Date(b.lastWrongAt || 0) - new Date(a.lastWrongAt || 0);
+  });
+  return entries;
+}
+
+function renderWrongBook(){
+  const entries = getWrongEntries();
+  const unmastered = entries.filter(e=>!e.mastered).length;
+  const mastered = entries.filter(e=>e.mastered).length;
+  const frequent = entries.filter(e=>!e.mastered && (e.wrongCount || 0) >= 2).length;
+  document.getElementById('wrong-stats').innerHTML = `
+    <div class="stat-card wrong"><div class="num">${unmastered}</div><div class="label">未掌握</div></div>
+    <div class="stat-card"><div class="num">${entries.length}</div><div class="label">累计收录</div></div>
+    <div class="stat-card multi"><div class="num">${frequent}</div><div class="label">高频错题</div></div>
+    <div class="stat-card single"><div class="num">${mastered}</div><div class="label">已掌握</div></div>
+  `;
+
+  const filtered = getFilteredWrongEntries();
+  const list = document.getElementById('wrong-list');
+  if(filtered.length === 0){
+    list.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><p>错题本暂无题目</p></div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(entry => {
+    const typeClass = entry.type === '单选题' ? 'single' : 'multi';
+    const tagType = entry.type === '单选题' ? 'tag-single' : 'tag-multi';
+    const statusTag = entry.mastered
+      ? '<span class="tag tag-multi">已掌握</span>'
+      : '<span class="tag tag-judge">未掌握</span>';
+    const optsHtml = entry.options ? Object.entries(entry.options).map(([k,v]) => `<div>${k}. ${escHtml(v)}</div>`).join('') : '';
+    return `<div class="q-item wrong-card ${typeClass} ${entry.mastered?'mastered':''}">
+      <div class="q-item-header">
+        <div class="q-tags">
+          <span class="tag tag-chapter">${escHtml(entry.chapter)}</span>
+          <span class="tag ${tagType}">${entry.type}</span>
+          ${statusTag}
+        </div>
+        <div class="q-actions">
+          <button class="btn btn-outline btn-sm" onclick="startWrongPractice(${entry.id})">练这题</button>
+          <button class="btn btn-muted btn-sm" onclick="toggleMastered(${entry.id})">${entry.mastered?'恢复未掌握':'标记掌握'}</button>
+          <button class="btn btn-danger btn-sm" onclick="removeWrong(${entry.id})">移出</button>
+        </div>
+      </div>
+      <div class="q-text">${escHtml(entry.question)}</div>
+      ${optsHtml ? `<div class="q-options">${optsHtml}</div>` : ''}
+      <div class="q-answer">正确答案：${escHtml(entry.answer)}；上次答案：${escHtml(entry.lastUserAnswer || '未记录')}</div>
+      <div class="wrong-meta">错误 ${entry.wrongCount || 1} 次 · 连续答对 ${entry.correctStreak || 0}/2 · 最近出错 ${formatDate(entry.lastWrongAt)}</div>
+      <textarea class="note-input" placeholder="错因、易混点、复盘记录" onblur="saveWrongNote(${entry.id}, this.value)">${escHtml(entry.note || '')}</textarea>
+    </div>`;
+  }).join('');
+}
+
+function startWrongPractice(id){
+  let entries = id ? [wrongBook[String(id)]].filter(Boolean) : getFilteredWrongEntries().filter(e=>!e.mastered);
+  if(entries.length === 0){
+    showToast('没有可练习的未掌握错题','error');
+    return;
+  }
+  beginExamWithQuestions(shuffle(entries));
+}
+
+function toggleMastered(id){
+  const entry = wrongBook[String(id)];
+  if(!entry) return;
+  entry.mastered = !entry.mastered;
+  entry.correctStreak = entry.mastered ? Math.max(entry.correctStreak || 0, 2) : 0;
+  saveWrongBook();
+  renderBank();
+  renderWrongBook();
+}
+
+function removeWrong(id){
+  if(!confirm('确定从错题本移出？')) return;
+  delete wrongBook[String(id)];
+  saveWrongBook();
+  renderBank();
+  renderWrongBook();
+}
+
+function saveWrongNote(id, note){
+  const entry = wrongBook[String(id)];
+  if(!entry) return;
+  entry.note = note.trim();
+  saveWrongBook();
+}
+
+function clearMasteredWrong(){
+  const mastered = getWrongEntries().filter(e=>e.mastered);
+  if(mastered.length === 0){
+    showToast('没有已掌握错题');
+    return;
+  }
+  if(!confirm(`确定清空 ${mastered.length} 道已掌握错题？`)) return;
+  mastered.forEach(e => delete wrongBook[String(e.id)]);
+  saveWrongBook();
+  renderBank();
+  renderWrongBook();
+}
+
+function exportWrongBook(){
+  const payload = {subject:'马克思主义基本原理', exportedAt:new Date().toISOString(), items:getWrongEntries()};
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '马克思主义基本原理错题本.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function importWrongBook(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try{
+      const data = JSON.parse(ev.target.result);
+      const items = Array.isArray(data) ? data : data.items;
+      if(!Array.isArray(items)) throw new Error('bad format');
+      items.forEach(item => {
+        if(item && item.id && item.question){
+          wrongBook[String(item.id)] = {...wrongBook[String(item.id)], ...item};
+        }
+      });
+      saveWrongBook();
+      renderBank();
+      renderWrongBook();
+      showToast('错题本已导入');
+    }catch(err){
+      showToast('导入失败，请检查 JSON 文件','error');
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file, 'utf-8');
+}
+
+function formatDate(iso){
+  if(!iso) return '未记录';
+  try{return new Date(iso).toLocaleString('zh-CN');}
+  catch(e){return iso;}
+}
+
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tab);
+  });
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + tab).classList.add('active');
+  if(tab === 'exam'){
+    if(examQuestions.length === 0 || examSubmitted) renderExamStart();
+  }
+  if(tab === 'wrongbook'){
+    renderWrongBook();
+  }
+}
+
+// ===== HISTORY =====
+function renderHistory(){
+  const el = document.getElementById('history-list');
+  if(examHistory.length === 0){
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><p>暂无答题记录</p></div>';
+    return;
+  }
+
+  el.innerHTML = examHistory.map(h => {
+    const pass = h.score >= 60;
+    const m = String(Math.floor(h.timeSpent/60)).padStart(2,'0');
+    const s = String(h.timeSpent%60).padStart(2,'0');
+    return `<div class="card history-item" onclick="viewHistoryDetail(${h.id})">
+      <div>
+        <div class="history-score ${pass?'pass':'fail'}">${h.score}分</div>
+        <div class="history-meta">${h.date}</div>
+      </div>
+      <div class="history-info">
+        <span style="color:var(--success)">✅ ${h.correct}/${h.total}</span>
+        <span style="color:var(--text-light)">⏱ ${m}:${s}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function viewHistoryDetail(id){
+  const h = examHistory.find(x=>x.id===id);
+  if(!h) return;
+
+  // Reuse the result rendering
+  const el = document.getElementById('view-history');
+  const pass = h.score >= 60;
+  const m = String(Math.floor(h.timeSpent/60)).padStart(2,'0');
+  const s = String(h.timeSpent%60).padStart(2,'0');
+
+  let reviewHtml = h.results.map((q,i) => {
+    let userAnsText = '';
+    if(q.type === '判断题') userAnsText = q.userAnswer || '未作答';
+    else if(q.type === '多选题') userAnsText = Array.isArray(q.userAnswer) ? q.userAnswer.join('') : '未作答';
+    else userAnsText = q.userAnswer || '未作答';
+
+    const correctAnsText = q.type === '判断题' ? q.answer : q.answer;
+
+    let optsDetail = '';
+    if(q.options){
+      optsDetail = Object.entries(q.options).map(([k,v]) => {
+        let cls = '';
+        if(q.type === '多选题'){
+          const correctArr = q.answer.split('');
+          const userArr = Array.isArray(q.userAnswer) ? q.userAnswer : [];
+          if(correctArr.includes(k)) cls = 'correct';
+          else if(userArr.includes(k)) cls = 'wrong';
+        } else {
+          if(k === q.answer) cls = 'correct';
+          else if(k === q.userAnswer && !q.isCorrect) cls = 'wrong';
+        }
+        return `<div class="exam-option ${cls}" style="cursor:default;padding:8px 12px;margin-bottom:4px">
+          <span class="opt-letter" style="width:24px;height:24px;font-size:.75rem">${k}</span>
+          <span style="font-size:.85rem">${escHtml(v)}</span>
+        </div>`;
+      }).join('');
+    } else {
+      optsDetail = `
+        <div class="exam-option ${q.answer==='对'?'correct':''} ${q.userAnswer==='对'&&!q.isCorrect?'wrong':''}" style="cursor:default;padding:8px 12px;margin-bottom:4px">
+          <span class="opt-letter" style="width:24px;height:24px;font-size:.75rem">✓</span><span>对</span>
+        </div>
+        <div class="exam-option ${q.answer==='错'?'correct':''} ${q.userAnswer==='错'&&!q.isCorrect?'wrong':''}" style="cursor:default;padding:8px 12px;margin-bottom:4px">
+          <span class="opt-letter" style="width:24px;height:24px;font-size:.75rem">✗</span><span>错</span>
+        </div>`;
+    }
+
+    return `<div class="review-item card">
+      <div class="q-header">
+        <span class="icon ${q.isCorrect?'ok':'no'}">${q.isCorrect?'✅':'❌'}</span>
+        <span style="font-weight:500">第${i+1}题</span>
+        <span class="tag ${q.type==='判断题'?'tag-judge':q.type==='单选题'?'tag-single':'tag-multi'}" style="margin-left:4px">${q.type}</span>
+      </div>
+      <div class="q-text" style="margin-bottom:8px">${escHtml(q.question)}</div>
+      ${q.image ? `<img class="q-image" src="${q.image}" alt="题目图片">` : ''}
+      <div style="margin:6px 0">${optsDetail}</div>
+      <div style="font-size:.85rem;margin-top:6px">
+        你的答案：<span style="color:${q.isCorrect?'var(--success)':'var(--error)'};font-weight:500">${escHtml(userAnsText)}</span>
+        ${!q.isCorrect ? ` &nbsp;|&nbsp; 正确答案：<span style="color:var(--success);font-weight:500">${escHtml(correctAnsText)}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div style="margin-bottom:16px">
+      <button class="btn btn-outline btn-sm" onclick="renderHistory()">⬅ 返回记录列表</button>
+    </div>
+    <div class="result-header card">
+      <h2 style="margin-bottom:4px">📊 考试记录详情</h2>
+      <div class="result-score ${pass?'pass':'fail'}">${h.score}</div>
+      <div style="font-size:1.1rem;color:${pass?'var(--success)':'var(--error)'}">${pass?'🎉 通过':'😢 未通过'}</div>
+      <div class="result-detail" style="margin-top:12px">
+        <span>✅ 正确：${h.correct}</span>
+        <span>❌ 错误：${h.total - h.correct}</span>
+        <span>⏱ 用时：${m}:${s}</span>
+      </div>
+      <div style="margin-top:8px;font-size:.85rem;color:var(--text-light)">${h.date}</div>
+    </div>
+    <h3 style="margin:16px 0 10px;font-size:1rem">📝 答题详情</h3>
+    ${reviewHtml}
+  `;
+}
+
+// Close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click', function(e){
+  if(e.target === this) closeModal();
+});
+
+// Init
+init();
+</script>
+</body>
+</html>
